@@ -1,0 +1,227 @@
+# Logs
+*.log
+# Temporary files
+*.tmp
+*~
+
+*.bak
+# Environment files (containing secrets, API keys, credentials)
+.env
+*.env
+.env.*
+
+# Local configuration that shouldn't be shared
+*.local
+
+### Node ###
+# Node.js dependency directory, logs, and environment files
+
+# Dependencies
+node_modules/
+jspm_packages/
+bower_components/
+web_modules/
+
+# Logs
+logs
+*.log
+*.launch
+connect.lock/
+
+libpeerconnection.log
+.history/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+lerna-debug.log*
+.pnpm-debug.log*
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+# Runtime data
+
+pids
+*.pid
+*.seed
+*.pid.lock
+# Environment
+
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+# Package management
+
+.npm
+package-lock.json
+yarn.lock
+.yarn-integrity
+.yarn/cache
+
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+# Coverage & Test
+
+coverage/
+lib-cov
+*.lcov
+.nyc_output
+# Build output
+
+dist/
+build/
+.next/
+out/
+.nuxt
+
+.output
+# Cache & Temporary
+.cache/
+.temp/
+.grunt
+
+.lock-wscript
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test
+
+.node_repl_history
+.webpack/
+# TypeScript
+*.tsbuildinfo
+# Optional REPL history
+
+.node_repl_history
+# Additional caches
+.eslintcache
+.stylelintcache
+.parcel-cache
+
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+# Misc
+
+*.tgz
+.serverless/
+.vuepress/dist
+.temp
+.docusaurus
+
+.svelte-kit
+Here's a message from our users...
+When it comes to Git, Tower does all the heavy lifting for you... and our users appreciate it!
+
+Ben Gotow
+I use @gittower and it’s so nice - I think my 2 faves are: drag and drop commits to cherry pick between branches, and rapidly selecting lines within files to commit so I can break a single pile of changes into several well described commits fast!
+
+Ben Gotow
+
+Iván Cabezon
+To me having a GUI is much quicker, in @gittower you can use a 3 key shortcut instead of typing a full sentence or even drag and drop if you don’t know the command yet 🙂, the diff is perfect and the image diff is 💖. You should give it a try! And the undo option is also 😍
+
+Iván Cabezon
+
+Manuel Molina
+Being able to drag and drop commits in @gittower and that it does an interactive rebase in the background is absolutely FABULOUS! Not sure why people like to type weird commands in a terminal.
+
+Manuel Molina
+
+sr
+Just used @gittower's new Reflog feature to restore a commit I accidentally deleted. Having done this before using command line, using Tower has simplified the process ten fold - just drag and drop.
+
+sr
+
+Thibault
+The ability to drag and drop commits in Tower (@gitTower) to re-order commits is so powerful ! I would like to see a guy with his Terminal doing that in less time than Tower 😉 haha
+
+Thibault
+
+Shane Armitage
+I don't typically drag and drop branches in @gittower but was pleasantly surprised to learn the alt key switches between MERGE and REBASE.
+
+Shane Armitage
+
+Peter Friese
+I am a big fan of @gittower. I *love* how it allows you to use drag and drop to merge branches - so intuitive!
+
+Peter Friese
+
+Russell Norris
+ooh i just used @gittower beta to drag-drop squash commits! so nice!
+
+Russell Norris
+
+Ortwin Gentz
+My favorite feature is rebase via drag and drop. #gittower
+
+Ortwin Gentz
+
+This is Just the Beginning
+There's so much more you can do with Tower!
+
+
+
+Watch this series of videos and learn how Tower can make you even more efficient and productive in Git.
+
+All features, 30 days for free!
+
+Try Tower now and see why it's the tool of choice for thousands of professionals all over the world.
+
+
+Also available for macOS
+
+Tower Git Client
+Download for macOS
+Download for Windows
+Releases
+Pricing
+Beta Channel
+
+Use Cases
+Developers
+Designers
+Teams
+Enterprise
+Students
+Teachers & Universities
+
+Features
+Easy
+Powerful
+Productive
+ 
+New Features
+All Features
+Integrations
+CLI vs GUI
+Stacked Pull Requests
+
+Free Tools
+.gitignore Generator
+
+Support
+Help Center
+Documentation
+Learn Git
+Newsletter
+Contact Us
+
+Company
+About
+Blog
+Press
+Jobs
+Merch
+Affiliate Program
+
+Legal
+License Agreement
+Privacy Policy
+Privacy Settings
+Imprint
+© 2010-2025 Tower - Mentioned product names and logos are property of their respective owners.
