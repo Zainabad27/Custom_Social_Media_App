@@ -2,10 +2,14 @@
   "name": "first_major_project",
   "version": "1.0.0",
   "description": "my first project of backend with yt channel chai aur code",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js"
   },
   "author": "Zain Ul Abad",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }
