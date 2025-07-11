@@ -1,17 +1,17 @@
-function async_handler(fn) {
-    return async function (req, res, next) {
-        try {
-            await fn(req, res, next);
-        } catch (error) {
-            next(error); // send to global error handler
-        }
-    };
-}
+// function async_handler(fn) {
+//     return async function (req, res, next) {
+//         try {
+//             await fn(req, res, next);
+//         } catch (error) {
+//             next(error); // send to global error handler
+//         }
+//     };
+// }
 
-/*
-professional syntax:
 
-const asyncHandler = (fn) => {
+//professional syntax:
+
+const async_handler = (fn) => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next))
       .catch((err) => next(err));
@@ -19,6 +19,6 @@ const asyncHandler = (fn) => {
 }
 
 
-*/
+
 
 export { async_handler }

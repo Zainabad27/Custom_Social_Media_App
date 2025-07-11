@@ -22,7 +22,5 @@ connect_to_db().then(() => {
 app.get("/login", async_handler((req, res, next) => {
     res.send("Hi, Welcome to the login page!!!!");
 }))
-app.get("/",(req, res) => {
-    res.send("Hi");
-})
+
 
