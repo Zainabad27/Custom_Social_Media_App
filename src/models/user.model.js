@@ -36,7 +36,8 @@ const userSchema = new mongoose.Schema({
     },
     coverimage: {
         type: String,
-        required: true
+        required:true
+        
     },
     password: {
         type: String,
@@ -61,12 +62,12 @@ userSchema.pre("save", async function passencrypt(next) {
     }
 })
 
-userSchema.methods.IsPasswordCorrect(async function (password) {
+userSchema.methods.IsPasswordCorrect=(async function (password) {
     return await bcrypt.compare(password, this.password);
 
 })
 
-userSchema.methods.GenerateAccessToken(function () {
+userSchema.methods.GenerateAccessToken=(function () {
     token = jwt.sign({
         id: this.id,
         username: this.username,
@@ -75,7 +76,7 @@ userSchema.methods.GenerateAccessToken(function () {
     }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY })
     return token;
 })
-userSchema.methods.GenerateRefreshToken(function () {
+userSchema.methods.GenerateRefreshToken=(function () {
     token = jwt.sign({
         id: this.id,
     }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY })
