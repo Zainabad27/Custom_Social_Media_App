@@ -2,13 +2,14 @@ import { v2 as cloudinary } from "cloudinary";
 import { MyError } from "./Api_Error.js";
 import fs from "fs"; // fs: filesystem to remove file from your OS after uploading or incase of an error too. so that our memory can be freed.
 
-cloudinary.config({
+
+
+const cloudinary_upload = async (filepath) => {
+    cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
-
-const cloudinary_upload = async (filepath) => {
 
     try {
         if (!filepath) {

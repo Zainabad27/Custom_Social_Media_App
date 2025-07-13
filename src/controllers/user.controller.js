@@ -59,8 +59,11 @@ const user_register = async_handler(async (req, res) => {
 
     const avatarUrl = avatarresponse.url;
     const coverimageresponse = await cloudinary_upload(coverimagelocalpath);
-
-    const coverimageUrl = coverimageresponse.url
+    let coverimageUrl="";
+    if(coverimageresponse){
+         coverimageUrl = coverimageresponse.url
+    }
+    
 
 
 
@@ -74,7 +77,7 @@ const user_register = async_handler(async (req, res) => {
         password,
         email,
         avatar: avatarUrl,
-        coverimage: coverimageUrl || "",
+        coverimage: coverimageUrl,
         fullname
     })
     const user_created = await users.findById(user._id).select(
