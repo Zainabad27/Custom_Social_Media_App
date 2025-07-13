@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({
+    path:"./.env"
+});
 
-console.log(process.env.PORT)
 import { connect_to_db } from "./database/index.js";
 
 

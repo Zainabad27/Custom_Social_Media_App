@@ -14,7 +14,7 @@ const user_register = async_handler(async (req, res) => {
 
     // extracting the user credential from the req.body() 
 
-    const {username,email,password,fullname} = req.body;
+    const { username, email, password, fullname } = req.body;
     const dataarry = [username, email, password, fullname];
     //checking if any field is left empty by the user or if the email format is incorrect.
     for (let i = 0; i < dataarry.length; i++) {
@@ -56,8 +56,10 @@ const user_register = async_handler(async (req, res) => {
 
     // uploading to cloudinary.
     const avatarresponse = await cloudinary_upload(avatarlocalpath);
+
     const avatarUrl = avatarresponse.url;
     const coverimageresponse = await cloudinary_upload(coverimagelocalpath);
+
     const coverimageUrl = coverimageresponse.url
 
 

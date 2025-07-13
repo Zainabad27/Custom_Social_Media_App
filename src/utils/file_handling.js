@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import { MyError } from "./Api_Error.js";
 import fs from "fs"; // fs: filesystem to remove file from your OS after uploading or incase of an error too. so that our memory can be freed.
 
 cloudinary.config({
@@ -22,7 +23,8 @@ const cloudinary_upload = async (filepath) => {
 
     } catch (error) {
         fs.unlinkSync(filepath);
-        console.log("The File did not upload...\nerror :", error);
+        // console.log("The File did not upload...\nerror :", error);
+        throw new MyError(500,`${error}`);
         return null;
 
 
