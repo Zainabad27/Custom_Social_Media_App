@@ -31,6 +31,9 @@ import user_router from "./routes/user.routes.js";
 app.use("/api/v1/users",user_router)
 //   http://localhost:3000/api/v1/users/register
 
+//login 
+app.use("/api/v1/users",user_router);
+
 
 
 
