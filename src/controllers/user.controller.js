@@ -13,7 +13,7 @@ const generate_refresh_and_access_token = async (user_id) => {
 
         return { new_accesstoken, new_refreshtoken };
     } catch (error) {
-        throw new MyError(500, error);
+        throw new MyError(500,error);
 
     }
 
@@ -129,7 +129,7 @@ const user_login = async_handler(async (req, res) => {
         throw new MyError(401, "Atlest one of username or email is required to login.");
     }
     if (!password) {
-        throw MyError(401, "Password was not given.");
+        throw new MyError(401, "Password was not given.");
     }
 
     const userinstance = await users.findOne({
@@ -149,14 +149,23 @@ const user_login = async_handler(async (req, res) => {
 
     // now we have generated both refresh and access token now we have to save refresh token into this userinstance
 
-    const updateduserinstance = users.findByIdAndUpdate(userinstance._id, {
+    const updateduserinstance = await users.findByIdAndUpdate(userinstance._id, {
         refreshtoken: new_refreshtoken
     }, {
         new: true,
         runValidators: false
-    }).select(
-        "-password -refreshtoken"
-    )
+    }).select("-password -refreshtoken");
+    // const userdata_to_send_response={
+    //     username:updateduserinstance.username,
+    //     id:updateduserinstance._id,
+    //     avatar:updateduserinstance.avatar,
+    //     coverimage:updateduserinstance.coverimage,
+    //     email:updateduserinstance.email,
+    //     fullname:updateduserinstance.fullname,
+    //     watchhistory:updateduserinstance.watchhistory,
+        
+    // }
+
     const options = {
         httpOnly: true,
         secure: true
@@ -165,7 +174,7 @@ const user_login = async_handler(async (req, res) => {
     return res.status(201).cookie("accesstoken", new_accesstoken, options).cookie("refreshtoken", new_refreshtoken, options).json(
         new ApiResponse(201,
             {
-                user: updateduserinstance, new_accesstoken, new_refreshtoken
+             user: updateduserinstance, new_accesstoken, new_refreshtoken
             },
             "user logged in succefully.")
     )

@@ -67,7 +67,7 @@ userSchema.methods.IsPasswordSame = (async function (password) {
 })
 
 userSchema.methods.GenerateAccessToken = (function () {
-    token = jwt.sign({
+    const token = jwt.sign({
         id: this.id,
         username: this.username,
         fullname: this.fullname,
@@ -76,7 +76,7 @@ userSchema.methods.GenerateAccessToken = (function () {
     return token;
 })
 userSchema.methods.GenerateRefreshToken = (function () {
-    token = jwt.sign({
+    const token = jwt.sign({
         id: this.id,
     }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY })
     return token;
