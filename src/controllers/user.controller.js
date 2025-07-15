@@ -13,7 +13,7 @@ const generate_refresh_and_access_token = async (user_id) => {
 
         return { new_accesstoken, new_refreshtoken };
     } catch (error) {
-        throw new MyError(500,error);
+        throw new MyError(500, error);
 
     }
 
@@ -163,7 +163,7 @@ const user_login = async_handler(async (req, res) => {
     //     email:updateduserinstance.email,
     //     fullname:updateduserinstance.fullname,
     //     watchhistory:updateduserinstance.watchhistory,
-        
+
     // }
 
     const options = {
@@ -174,15 +174,39 @@ const user_login = async_handler(async (req, res) => {
     return res.status(201).cookie("accesstoken", new_accesstoken, options).cookie("refreshtoken", new_refreshtoken, options).json(
         new ApiResponse(201,
             {
-             user: updateduserinstance, new_accesstoken, new_refreshtoken
+                user: updateduserinstance, new_accesstoken, new_refreshtoken
             },
             "user logged in succefully.")
     )
 
 })
- const user_logout=async_handler(async (req,res)=>{
-    
+const user_logout = async_handler(async (req, res) => {
+    const { id } = req.user;
 
- })
+    await users.findByIdAndUpdate(
+        id,
+        {
+            $set: { refreshtoken: null }
+        }
+        , {
+            new: true,
+            runValidators: false
+        }
+    )
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
 
-export { user_register, user_login,user_logout }
+
+    res.status(200).clearCookie("accesstoken", options).clearCookie("refreshtoken", options).json(
+        new ApiResponse(200, {}, "User logged out.")
+    )
+
+
+
+
+
+})
+
+export { user_register, user_login, user_logout }
