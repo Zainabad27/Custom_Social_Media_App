@@ -3,6 +3,7 @@ import { MyError } from "../utils/Api_Error.js";
 import { users } from "../models/user.model.js";
 import { cloudinary_upload } from "../utils/file_handling.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken";
 
 
 const generate_refresh_and_access_token = async (user_id) => {
@@ -208,5 +209,45 @@ const user_logout = async_handler(async (req, res) => {
 
 
 })
+const refreshaccesstoken = async_handler(async (req, res) => {
+    const incoming_refreshtoken = req.cookie.refreshtoken || req.body.refreshtoken;
 
-export { user_register, user_login, user_logout }
+    if (!incoming_refreshtoken) {
+        throw new MyError(401, "Unauthorized request");
+    }
+    try {
+        const decodedtoken = jwt.verify(incoming_refreshtoken, process.env.REFRESH_TOKEN_SECRET);
+
+        const userinstance = await users.findById(decodedtoken.id);
+        if (!userinstance) {
+            throw new MyError(401, "refresh token is not if this user. Unauthorized Access.");
+        }
+        const databasetoken = userinstance.refreshtoken
+        if (incoming_refreshtoken !== databasetoken) {
+            throw new MyError(401, "Refresh Token Did Not Match,Unauthorized Access")
+        }
+
+        const { new_accesstoken, new_refreshtoken } = await generate_refresh_and_access_token(userinstance.id);
+        const userdata_for_response = await users.findByIdAndUpdate(userinstance.id, {
+            $set: { refreshtoken: new_refreshtoken }
+        }, {
+            new: true,
+            runValidators: false
+        }).select("-password -refreshtoken");
+
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        res.status(201).cookie("accesstoken", new_accesstoken, options).cookie("refreshtoken", new_refreshtoken, options).json(new ApiResponse(201,{
+            new_accesstoken,userdata_for_response,refreshtoken:new_refreshtoken
+        },"Access token refreshed Successfully."));
+
+    } catch (error) {
+        throw new MyError(401, error?.message);
+
+    }
+})
+export { user_register, user_login, user_logout, refreshaccesstoken }
