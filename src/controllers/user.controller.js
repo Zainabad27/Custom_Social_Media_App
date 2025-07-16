@@ -253,20 +253,6 @@ const refresh_accesstoken = async_handler(async (req, res) => {
     }
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const update_password = async_handler(async (req, res) => {
     const { oldpassword, newpassword, confirmpassword } = req.body;
     if (newpassword !== confirmpassword) {
@@ -279,7 +265,7 @@ const update_password = async_handler(async (req, res) => {
         throw new MyError(400, "Incorrect Old password.");
     }
     userinstance.password = newpassword;
-    userinstance.save({
+    await userinstance.save({
         validateBeforeSave: false
     });
 
@@ -293,8 +279,8 @@ const updateuserdetails = async_handler(async (req, res) => {
 
     const { email, username, fullname } = req.body;
 
-    if (!(email || username || fullname)) {
-        throw new MyError(401, "No field was provided for Updation process.")
+    if (!(email || username || fullname || req.files['avatar'] || req.files['coverimage'])) {
+        throw new MyError(400, "No field was provided for Updation process.")
     }
     // extracting the userinstance from database.
     const { id } = req.user;
@@ -304,15 +290,15 @@ const updateuserdetails = async_handler(async (req, res) => {
         //checking for valid email.
         const validemail = isEmail(email);
         if (!validemail) {
-            throw new MyError(401, "Invalid email was given for update.");
+            throw new MyError(400, "Invalid email was given for update.");
         }
         //checking if the email exists for a different user or not?
         const emailpresent = await users.findOne({ email: email });
         if (emailpresent) {
-            throw new MyError(401, "Can't update email, the email given is already in use by another user.");
+            throw new MyError(400, "Can't update email, the email given is already in use by another user.");
         }
         userinstance.email = email;
-        userinstance.save({
+        await userinstance.save({
             validateBeforeSave: false
         })
 
@@ -323,10 +309,10 @@ const updateuserdetails = async_handler(async (req, res) => {
             username: username
         })
         if (usernamepresent) {
-            throw new MyError(401, "Username already in use by another user,can't update.")
+            throw new MyError(400, "Username already in use by another user,can't update.")
         }
         userinstance.username = username;
-        userinstance.save({
+        await userinstance.save({
             validateBeforeSave: false
         })
     }
@@ -334,10 +320,47 @@ const updateuserdetails = async_handler(async (req, res) => {
     if (fullname) {
 
         userinstance.fullname = fullname;
-        userinstance.save({
+        await userinstance.save({
             validateBeforeSave: false
         })
     }
+    let avatarlocalpath = null;
+
+    if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) {
+        avatarlocalpath = req.files.avatar[0].path;
+    }
+    if (avatarlocalpath) {
+
+        const avatarresponse = await cloudinary_upload(avatarlocalpath);
+        const avatarurl = avatarresponse.url;
+        if (!avatarurl) {
+            throw new MyError(500, "Problem while Uploading the file on cloudinary.")
+        }
+
+        userinstance.avatar = avatarurl;
+        await userinstance.save({
+            validateBeforeSave: false
+        })
+
+    }
+    let coverimagelocalpath = null;
+    if (req.files && Array.isArray(req.files.coverimage) && req.files.coverimage.length > 0) {
+        coverimagelocalpath = req.files.coverimage[0].path;
+    }
+    if (coverimagelocalpath) {
+        const coverimageresponse = await cloudinary_upload(coverimagelocalpath);
+        const coverimageUrl = coverimageresponse.url;
+        if (!coverimageUrl) {
+            throw new MyError(500, "problem while uploading the coverimage on cloudinary.")
+        }
+
+        userinstance.coverimage = coverimageUrl;
+        await userinstance.save({
+            validateBeforeSave: false
+        });
+
+    }
+
 
     res.status(201).json(
         new ApiResponse(201, {}, "User details updated succesfully.")

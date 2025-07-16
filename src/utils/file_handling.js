@@ -6,10 +6,10 @@ import fs from "fs"; // fs: filesystem to remove file from your OS after uploadi
 
 const cloudinary_upload = async (filepath) => {
     cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
 
     try {
         if (!filepath) {
@@ -25,8 +25,12 @@ const cloudinary_upload = async (filepath) => {
     } catch (error) {
         fs.unlinkSync(filepath);
         // console.log("The File did not upload...\nerror :", error);
-        throw new MyError(500,`${error}`);
-        return null;
+
+        throw new MyError(500, error?.message);
+
+
+
+
 
 
 
