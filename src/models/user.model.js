@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-userSchema.pre("save", async function passencrypt(next) {
+userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     try {
         this.password = await bcrypt.hash(this.password, 10);
@@ -62,7 +62,7 @@ userSchema.pre("save", async function passencrypt(next) {
 })
 
 userSchema.methods.IsPasswordSame = (async function (password) {
-    return await bcrypt.compare(password, this.password);
+    return bcrypt.compare(password, this.password);
 
 })
 

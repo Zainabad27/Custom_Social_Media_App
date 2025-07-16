@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { user_register, user_login, user_logout,refreshaccesstoken } from "../controllers/user.controller.js";
+import { user_register, user_login, user_logout,refresh_accesstoken,update_password ,updateuserdetails} from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { jwt_verify } from "../middlewares/authorization.middleware.js";
 
@@ -17,10 +17,13 @@ router.route("/register").post(upload.fields([{
 router.route("/login").post(user_login);
 
 
-//secured routes
+//secured routes(user is already logged in)
 router.route("/logout").post(jwt_verify, user_logout);
 
-router.route("/refreshAccesstoken").post(refreshaccesstoken);
+router.route("/refreshAccesstoken").post(refresh_accesstoken);
+
+router.route("/update-password").post(jwt_verify,update_password);
+router.route("/update-user/details").post(jwt_verify,updateuserdetails);
 
 
 

@@ -4,6 +4,8 @@ import { users } from "../models/user.model.js";
 import { cloudinary_upload } from "../utils/file_handling.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import isEmail from 'validator/lib/isEmail.js';
+
 
 
 const generate_refresh_and_access_token = async (user_id) => {
@@ -209,7 +211,7 @@ const user_logout = async_handler(async (req, res) => {
 
 
 })
-const refreshaccesstoken = async_handler(async (req, res) => {
+const refresh_accesstoken = async_handler(async (req, res) => {
     const incoming_refreshtoken = req.cookie.refreshtoken || req.body.refreshtoken;
 
     if (!incoming_refreshtoken) {
@@ -241,13 +243,105 @@ const refreshaccesstoken = async_handler(async (req, res) => {
             secure: true
         }
 
-        res.status(201).cookie("accesstoken", new_accesstoken, options).cookie("refreshtoken", new_refreshtoken, options).json(new ApiResponse(201,{
-            new_accesstoken,userdata_for_response,refreshtoken:new_refreshtoken
-        },"Access token refreshed Successfully."));
+        res.status(201).cookie("accesstoken", new_accesstoken, options).cookie("refreshtoken", new_refreshtoken, options).json(new ApiResponse(201, {
+            new_accesstoken, userdata_for_response, refreshtoken: new_refreshtoken
+        }, "Access token refreshed Successfully."));
 
     } catch (error) {
         throw new MyError(401, error?.message);
 
     }
 })
-export { user_register, user_login, user_logout, refreshaccesstoken }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const update_password = async_handler(async (req, res) => {
+    const { oldpassword, newpassword, confirmpassword } = req.body;
+    if (newpassword !== confirmpassword) {
+        throw new MyError(401, "new password and confirm password does not match.");
+    }
+    const { id } = req.user;
+    const userinstance = await users.findById(id);
+    const correctpassword = await userinstance.IsPasswordSame(oldpassword)
+    if (!correctpassword) {
+        throw new MyError(400, "Incorrect Old password.");
+    }
+    userinstance.password = newpassword;
+    userinstance.save({
+        validateBeforeSave: false
+    });
+
+    res.status(201).json(new ApiResponse(201, {}, "Password Updated Succesfully."));
+
+
+
+})
+
+const updateuserdetails = async_handler(async (req, res) => {
+
+    const { email, username, fullname } = req.body;
+
+    if (!(email || username || fullname)) {
+        throw new MyError(401, "No field was provided for Updation process.")
+    }
+    // extracting the userinstance from database.
+    const { id } = req.user;
+    const userinstance = await users.findById(id);
+    // updating email.
+    if (email) {
+        //checking for valid email.
+        const validemail = isEmail(email);
+        if (!validemail) {
+            throw new MyError(401, "Invalid email was given for update.");
+        }
+        //checking if the email exists for a different user or not?
+        const emailpresent = await users.findOne({ email: email });
+        if (emailpresent) {
+            throw new MyError(401, "Can't update email, the email given is already in use by another user.");
+        }
+        userinstance.email = email;
+        userinstance.save({
+            validateBeforeSave: false
+        })
+
+    }
+    // updating username
+    if (username) {
+        const usernamepresent = await users.findOne({
+            username: username
+        })
+        if (usernamepresent) {
+            throw new MyError(401, "Username already in use by another user,can't update.")
+        }
+        userinstance.username = username;
+        userinstance.save({
+            validateBeforeSave: false
+        })
+    }
+    // updating fullname 
+    if (fullname) {
+
+        userinstance.fullname = fullname;
+        userinstance.save({
+            validateBeforeSave: false
+        })
+    }
+
+    res.status(201).json(
+        new ApiResponse(201, {}, "User details updated succesfully.")
+    )
+
+})
+export { user_register, user_login, user_logout, refresh_accesstoken, update_password, updateuserdetails }
