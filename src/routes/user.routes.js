@@ -22,8 +22,8 @@ router.route("/logout").post(jwt_verify, user_logout);
 
 router.route("/refreshAccesstoken").post(refresh_accesstoken);
 
-router.route("/update-password").post(jwt_verify, update_password);
-router.route("/update-user/details").post(jwt_verify, upload.fields([{
+router.route("/update-password").patch(jwt_verify, update_password);
+router.route("/update-user/details").patch(jwt_verify, upload.fields([{
     name: "avatar",
     maxCount: 1
 }, {
