@@ -1,5 +1,14 @@
 import { Router } from "express";
-import { user_register, user_login, user_logout, refresh_accesstoken, update_password, updateuserdetails } from "../controllers/user.controller.js";
+import {
+    user_register,
+    user_login,
+    user_logout,
+    refresh_accesstoken,
+    update_password,
+    updateuserdetails,
+    getuserchannelprofile,
+    getuserwatchhistory
+} from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { jwt_verify } from "../middlewares/authorization.middleware.js";
 
@@ -22,7 +31,7 @@ router.route("/logout").post(jwt_verify, user_logout);
 
 router.route("/refreshAccesstoken").post(refresh_accesstoken);
 
-router.route("/update-password").patch(jwt_verify, update_password);
+router.route("/update-password").post(jwt_verify, update_password);
 router.route("/update-user/details").patch(jwt_verify, upload.fields([{
     name: "avatar",
     maxCount: 1
@@ -30,6 +39,9 @@ router.route("/update-user/details").patch(jwt_verify, upload.fields([{
     name: "coverimage",
     maxCount: 1
 }]), updateuserdetails);
+
+router.route("/c/:username/getuserprofile").get(jwt_verify, getuserchannelprofile);
+router.route("/getwatchhistory").get(jwt_verify, getuserwatchhistory);
 
 
 
