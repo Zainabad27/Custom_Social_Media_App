@@ -30,10 +30,10 @@ const videoSchema = new mongoose.Schema({
         required:true,
         default:0
     },
-    ispublished:{
+    isdeleted:{
         type:Boolean,
         required:true,
-        default:true
+        default:false
     },
     owner:{
         type:mongoose.Schema.Types.ObjectId,

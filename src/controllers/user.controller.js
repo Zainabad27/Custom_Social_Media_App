@@ -37,7 +37,7 @@ const user_register = async_handler(async (req, res) => {
     const dataarry = [username, email, password, fullname];
     //checking if any field is left empty by the user or if the email format is incorrect.
     for (let i = 0; i < dataarry.length; i++) {
-        if (dataarry[i] === "") {
+        if (dataarry[i] === ""||!dataarry[i]) {
             throw new MyError(401, `${dataarry[i]} is Empty.`);
 
         }
@@ -68,6 +68,8 @@ const user_register = async_handler(async (req, res) => {
     if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) {
         avatarlocalpath = req.files.avatar[0].path;
     }
+    // console.log("See bro what it has: ",req.files)
+    // console.log("And what it doesn't ahve: ",req.file)
     const coverimagelocalpath = req.files?.coverimage?.[0].path;
     if (!avatarlocalpath) {
         throw new MyError(400, "Avatar is compulsory but was not given.");
