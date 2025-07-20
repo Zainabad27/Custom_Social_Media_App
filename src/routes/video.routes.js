@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { jwt_verify } from "../middlewares/authorization.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { upload_video } from "../controllers/video.controller.js";
+import { upload_video,getvideo } from "../controllers/video.controller.js";
 
 
 
@@ -18,6 +18,9 @@ router.route("/uploading-video").post(
       maxCount:1
     }]),
     upload_video);
+
+
+router.route("/getvideo").get(getvideo);
 
 
     export default router;

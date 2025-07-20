@@ -11,20 +11,20 @@ const upload_video = async_handler(async (req, res) => {
     //  console.log(req.user)
     const { videofile, thumbnail } = req.files;
     const { vidtitle, description } = req.body;
-    const  id = req.user?._id;
+    const id = req.user?._id;
     if (!id) {
         throw new MyError(400, "User is not logged in.")
     }
 
-    let arr = [ thumbnail,videofile, vidtitle, description];
-    let a=["thumbnail","video","title","description"];
+    let arr = [thumbnail, videofile, vidtitle, description];
+    let a = ["thumbnail", "video", "title", "description"];
     for (let element in arr) {
         // console.log(element);
         if (!arr[element] || arr[element] === "") {
             throw new MyError(401, `${a[element]} is not given.`);
         }
     }
-    const vid_title_present=await videos.findOne({vidtitle:vidtitle});
+    const vid_title_present = await videos.findOne({ vidtitle: vidtitle });
     if (vid_title_present) {
         throw new MyError(401, "This video title is already taken.");
     };
@@ -53,7 +53,7 @@ const upload_video = async_handler(async (req, res) => {
     if (!vidduration) {
         throw new MyError(500, "duration of video cannot be occupied.")
     }
-   
+
 
 
     const vidinstance = await videos.create({
@@ -72,9 +72,30 @@ const upload_video = async_handler(async (req, res) => {
     }
 
 
-    res.status(201).json(new ApiResponse(201,vidinstance,"Video uploaded successfully."));
+    res.status(201).json(new ApiResponse(201, vidinstance, "Video uploaded successfully."));
 
 });
 
 
-export { upload_video }
+const getvideo = async_handler(async (req, res) => {// this function is called when someone clicks on a video,it fetches the video on the basis of video title, it returns a vid URL.
+
+    const videotitle = req.body.vidtitle;
+
+    if (!videotitle) {
+        throw new MyError(401, "Video Title is essential for searching the video in the database.");
+    }
+    const vidinstance = await videos.findOne({ vidtitle: videotitle });
+
+    if (!vidinstance) {
+        throw new MyError(401, "Video does not exists in the database.");
+    }
+
+    const vidurl = vidinstance.videofile;
+
+    res.status(201).json(new ApiResponse(201,  vidurl , "Video Fetched successfully"));
+
+
+})
+
+
+export { upload_video, getvideo }
