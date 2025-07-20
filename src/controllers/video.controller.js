@@ -84,15 +84,15 @@ const getvideo = async_handler(async (req, res) => {// this function is called w
     if (!videotitle) {
         throw new MyError(401, "Video Title is essential for searching the video in the database.");
     }
-    const vidinstance = await videos.findOne({ vidtitle: videotitle });
+    const vidinstance = await videos.findOne({ vidtitle: videotitle }).select("-thumbnail");
 
     if (!vidinstance) {
         throw new MyError(401, "Video does not exists in the database.");
     }
 
-    const vidurl = vidinstance.videofile;
 
-    res.status(201).json(new ApiResponse(201,  vidurl , "Video Fetched successfully"));
+
+    res.status(201).json(new ApiResponse(201, vidinstance, "Video Fetched successfully"));
 
 
 })
