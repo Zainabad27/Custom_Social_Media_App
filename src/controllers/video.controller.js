@@ -6,20 +6,28 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 
-const uploadvideo = async_handler(async (req, res) => {
+const upload_video = async_handler(async (req, res) => {
+    // console.log(req.files)
+    //  console.log(req.user)
     const { videofile, thumbnail } = req.files;
     const { vidtitle, description } = req.body;
-    const { id } = req.user?.id;
+    const  id = req.user?._id;
     if (!id) {
         throw new MyError(400, "User is not logged in.")
     }
 
-    let arr = [videofile, thumbnail, vidtitle, description];
+    let arr = [ thumbnail,videofile, vidtitle, description];
+    let a=["thumbnail","video","title","description"];
     for (let element in arr) {
-        if (!element || element === "") {
-            throw new MyError(401, `${element} is not given.`);
-        } _
+        // console.log(element);
+        if (!arr[element] || arr[element] === "") {
+            throw new MyError(401, `${a[element]} is not given.`);
+        }
     }
+    const vid_title_present=await videos.findOne({vidtitle:vidtitle});
+    if (vid_title_present) {
+        throw new MyError(401, "This video title is already taken.");
+    };
 
     const video_localpath = req.files?.videofile[0]?.path;
     if (!video_localpath) {
@@ -38,21 +46,35 @@ const uploadvideo = async_handler(async (req, res) => {
         throw new MyError(500, "Problem occured while uploading the thumbnail on cloudinary.")
     }
 
-    const vidurl=videoresponse.url;
-    const thumbnailurl=thumbnailresponse.url;
+    const vidurl = videoresponse.url;
+    const thumbnailurl = thumbnailresponse.url;
+    const vidduration = videoresponse.height
 
-    
-
-
-
-    // now we ahve all the data, now we'll upload it in the database to video model. with the user ID as refrence who is logged in.
-
-
+    if (!vidduration) {
+        throw new MyError(500, "duration of video cannot be occupied.")
+    }
+   
 
 
+    const vidinstance = await videos.create({
+        videofile: vidurl,
+        thumbnail: thumbnailurl,
+        description,
+        vidtitle,
+        views: 0,
+        isdeleted: false,
+        vidduration,
+        owner: id
+
+    });
+    if (!vidinstance) {
+        throw new MyError(500, "problem occured while saving the data into the database.");
+    }
 
 
-})
+    res.status(201).json(new ApiResponse(201,vidinstance,"Video uploaded successfully."));
+
+});
 
 
-export { uploadvideo }
+export { upload_video }
