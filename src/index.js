@@ -7,7 +7,6 @@ import { connect_to_db } from "./database/index.js";
 
 
 import { app } from './app.js';
-import { async_handler } from './utils/async_handler.js';
 
 
 
@@ -20,8 +19,5 @@ connect_to_db().then(() => {
     console.log("Connection to database failed!!! ", err);
 })
 
-app.get("/login", async_handler((req, res, next) => {
-    res.send("Hi, Welcome to the login page!!!!");
-}))
 
 

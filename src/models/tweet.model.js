@@ -1,15 +1,21 @@
 import mongoose from "mongoose";
 
 const tweetschema = new mongoose.Schema({
-    content:{
+    tweet_content:{
         type:String,
-        required:true,
+      
+    
     },
     tweet_owner:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
         required:true
     },
+    tweet_media:[{
+        //if user wants to tweet any photo or any video.
+        type:String,
+
+    }]
     
 }, { timestamps: true });
 

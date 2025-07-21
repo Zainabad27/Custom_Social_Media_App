@@ -40,4 +40,9 @@ import comment_router from "./routes/comment.routes.js";
 app.use("/api/v1/comments", comment_router);
 
 
+import tweet_router from "./routes/tweet.routes.js";
+
+app.use("/api/v1/tweets", tweet_router);
+
+
 export { app }
