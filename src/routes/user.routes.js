@@ -49,7 +49,7 @@ router.route("/getwatchhistory").get(jwt_verify, getuserwatchhistory);
 //importing the class instance.
 
 import { obj1 } from "../DI_classes.js/user.class.js";
-router.route("login/through/classes").post(obj1.user_login);
+router.route("/login/through/classes").post(obj1.user_login);
 
 
 

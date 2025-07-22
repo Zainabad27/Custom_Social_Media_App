@@ -5,12 +5,17 @@ import { MyError } from "../utils/Api_Error.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 
+
+
 class User_class {
-    constructor(async_handler, user_model, error_class, api_response_class) {
-        this.async_handler = async_handler;
+    constructor(async_handler_fn, user_model, error_class, api_response_class) {
+        this.async_handler = async_handler_fn;
         this.users = user_model;
         this.MyError = error_class;
         this.ApiResponse = api_response_class;
+
+
+         this.user_login = this.async_handler(this.user_login.bind(this));
 
     }
 
@@ -29,8 +34,10 @@ class User_class {
 
     }
 
+    
 
-    user_login = this.async_handler(async (req, res) => {
+
+    user_login =(async (req, res) => {
 
         const { username, email, password } = req.body;
 
@@ -49,7 +56,7 @@ class User_class {
         if (!userinstance) {
             throw new this.MyError(401, "User does not exists");
         }
-        const passcorrect = await this.userinstance.IsPasswordSame(password);
+        const passcorrect = await userinstance.IsPasswordSame(password);
         if (!passcorrect) {
             throw new this.MyError(401, "Incorrect password.");
         }
@@ -64,16 +71,7 @@ class User_class {
             new: true,
             runValidators: false
         }).select("-password -refreshtoken");
-        // const userdata_to_send_response={
-        //     username:updateduserinstance.username,
-        //     id:updateduserinstance._id,
-        //     avatar:updateduserinstance.avatar,
-        //     coverimage:updateduserinstance.coverimage,
-        //     email:updateduserinstance.email,
-        //     fullname:updateduserinstance.fullname,
-        //     watchhistory:updateduserinstance.watchhistory,
-
-        // }
+      
 
         const options = {
             httpOnly: true,
