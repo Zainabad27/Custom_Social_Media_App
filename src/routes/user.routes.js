@@ -45,5 +45,13 @@ router.route("/getwatchhistory").get(jwt_verify, getuserwatchhistory);
 
 
 
+//checking if the DI refactor Code is working or not?
+//importing the class instance.
+
+import { obj1 } from "../DI_classes.js/user.class.js";
+router.route("login/through/classes").post(obj1.user_login);
+
+
+
 
 export default router;

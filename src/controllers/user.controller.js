@@ -9,6 +9,8 @@ import mongoose from "mongoose";
 
 
 
+
+
 const generate_refresh_and_access_token = async (user_id) => {
     try {
         const userinstance = await users.findById(user_id);
@@ -120,15 +122,7 @@ const user_register = async_handler(async (req, res) => {
 })
 
 const user_login = async_handler(async (req, res) => {
-    /*
-    first we have to check in the cookies if the user is already logged in or not by checking refresh token
-    if yes, we still have to genrate a refresh token and give it to the user so that his timing in refresh token is reset.
-    if not, then :
-    take the credentials from the user like username and password
-    decode the password in the database and check it by the password given by user while loging in (use model method ispasswordsame).
-    Generate an access token give it to user in cookies + generate a refresh token and give it to cookies and also save it in the database.
-    if user is logged in we have let user in the account.
-    */
+   
     const { username, email, password } = req.body;
 
     if (!(username || email)) {
