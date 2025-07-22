@@ -4,7 +4,7 @@ import { tweets } from "../models/tweet.model.js";
 import { users } from "../models/user.model.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { cloudinary_upload } from "../utils/file_handling.js";
-import mongoose from "mongoose";
+
 
 const make_a_tweet = async_handler(async (req, res) => {
     // secured route.
@@ -80,7 +80,7 @@ const get_all_tweets = async_handler(async (req, res) => {
                     $project: {
                         tweet_content: 1,
                         tweet_media: 1,
-                        _id:0
+                        _id: 0
                     }
                 }
             ]
@@ -92,7 +92,7 @@ const get_all_tweets = async_handler(async (req, res) => {
             username: 1,
             all_tweets: 1,
             avatar: 1,
-            _id:0
+            _id: 0
         }
     }
     ]);
@@ -100,9 +100,9 @@ const get_all_tweets = async_handler(async (req, res) => {
     if (!result) {
         throw new MyError(500, "Error occured while fetching the data from database.")
     }
-    const is_follower=false;
-    if(req.user.id){
-        
+    const is_follower = false;
+    if (req.user.id) {
+        //to be written
 
     }
     const data_to_send = result[0];
