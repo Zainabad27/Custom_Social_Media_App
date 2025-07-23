@@ -7,7 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 
-class User_class {
+class user_controller {
     constructor(async_handler_fn, user_model, error_class, api_response_class) {
         this.async_handler = async_handler_fn;
         this.users = user_model;
@@ -15,7 +15,7 @@ class User_class {
         this.ApiResponse = api_response_class;
 
 
-         this.user_login = this.async_handler(this.user_login.bind(this));
+        this.user_login = this.async_handler(this.user_login.bind(this));
 
     }
 
@@ -34,10 +34,10 @@ class User_class {
 
     }
 
-    
 
 
-    user_login =(async (req, res) => {
+
+    user_login = (async (req, res) => {
 
         const { username, email, password } = req.body;
 
@@ -71,7 +71,7 @@ class User_class {
             new: true,
             runValidators: false
         }).select("-password -refreshtoken");
-      
+
 
         const options = {
             httpOnly: true,
@@ -90,7 +90,7 @@ class User_class {
 };
 
 
-const obj1 = new User_class(async_handler, users, MyError, ApiResponse);
+const obj1 = new user_controller(async_handler, users, MyError, ApiResponse);
 
 
 export { obj1 }
