@@ -8,14 +8,12 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 class user_controller {
-    constructor(async_handler_fn, user_model, error_class, api_response_class) {
-        this.async_handler = async_handler_fn;
+    constructor(user_model) {
+
         this.users = user_model;
-        this.MyError = error_class;
-        this.ApiResponse = api_response_class;
 
 
-        this.user_login = this.async_handler(this.user_login.bind(this));
+        // this.user_login = async_handler(this.user_login.bind(this));
 
     }
 
@@ -28,7 +26,7 @@ class user_controller {
 
             return { new_accesstoken, new_refreshtoken };
         } catch (error) {
-            throw new this.MyError(500, error);
+            throw new MyError(500, error);
 
         }
 
@@ -37,15 +35,15 @@ class user_controller {
 
 
 
-    user_login = (async (req, res) => {
+    user_login = async_handler(async (req, res) => {
 
         const { username, email, password } = req.body;
 
         if (!(username || email)) {
-            throw new this.MyError(401, "Atlest one of username or email is required to login.");
+            throw new MyError(401, "Atlest one of username or email is required to login.");
         }
         if (!password) {
-            throw new this.MyError(401, "Password was not given.");
+            throw new MyError(401, "Password was not given.");
         }
 
         const userinstance = await this.users.findOne({
@@ -54,11 +52,11 @@ class user_controller {
         //console.log("user:instance: ",userinstance);
 
         if (!userinstance) {
-            throw new this.MyError(401, "User does not exists");
+            throw new MyError(401, "User does not exists");
         }
         const passcorrect = await userinstance.IsPasswordSame(password);
         if (!passcorrect) {
-            throw new this.MyError(401, "Incorrect password.");
+            throw new MyError(401, "Incorrect password.");
         }
 
         const { new_accesstoken, new_refreshtoken } = await this.generate_refresh_and_access_token(userinstance._id);
@@ -79,7 +77,7 @@ class user_controller {
         }
 
         return res.status(201).cookie("accesstoken", new_accesstoken, options).cookie("refreshtoken", new_refreshtoken, options).json(
-            new this.ApiResponse(201,
+            new ApiResponse(201,
                 {
                     user: updateduserinstance, new_accesstoken, new_refreshtoken
                 },
@@ -90,7 +88,8 @@ class user_controller {
 };
 
 
-const obj1 = new user_controller(async_handler, users, MyError, ApiResponse);
+const obj1 = new user_controller(users);
 
 
 export { obj1 }
+export { user_controller }
