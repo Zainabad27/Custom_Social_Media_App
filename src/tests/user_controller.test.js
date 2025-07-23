@@ -1,63 +1,37 @@
 import request from "supertest";
-import { it, expect, describe } from "vitest";
+import { afterAll, beforeAll, it, expect, describe } from "vitest";
 import { user_controller } from "../DI_classes.js/user.class.js";
 import { app } from "../app.js";
+import { connect_testing_db } from "../database/testing_db.js";
 
 
-const fakeuserinstance = {
-    _id: "123456789",
-    username: "abcd",
-    email: "abcd@gmail.com",
-    GenerateAccessToken: () => {
-        return "accesstoken."
-    },
-    GenerateRefreshToken: () => {
-        return "refreshtoken."
-    },
-    IsPasswordSame: (password="12345") => {
-        if (password === "12345") return true;
-        return false;
-    }
-}
-const fakemodel = {
-    findById: (id) => {
-        if (id === "12345") {
-            return fakeuserinstance;
-        }
-        else return null;
+import dotenv from 'dotenv';
+dotenv.config({
+    path: "./.env"
+});
 
-    },
-    findOne: (username) => {
-        if (username === "abcd") {
-            return fakeuserinstance;
-        }
+beforeAll(async () => {
+    await connect_testing_db();
+    console.log("Testing db connected.");
+});
 
-    },
-    findByIdAndUpdate: (id) => {
-        if (id === "123456789") {
-            return {
-                select: (fields) => {
-                    if(fields) return fakeuserinstance
+import mongoose from "mongoose";
 
-                }
-            }
-        }
-
-    }
-}
-// console.log("look here bro:......",app)
+afterAll(async () => {
+    await mongoose.connection.close();
+});
 
 describe("testing the user controller.", () => {
-  const test_obj=new user_controller(fakemodel);
+    //   const test_obj=new user_controller(fakemodel);
 
-  it("should login successfully.",async ()=>{
-   const result=await request(app).post("/api/v1/users/users/login/through/classes").send({
-        "username":"abcd",
-        "password":"12345"
+    it("should login successfully.", async () => {
+        const res = await request(app).post("/api/v1/users/login/through/classes").send({
+            "username": "abcd",
+            "password": "12345"
+        })
+
+        expect(res.statuscode).toBe(201);
     })
-
-    expect(result.statusCode).toBe(201);
-  })
 
 
 })

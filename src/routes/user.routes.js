@@ -49,7 +49,14 @@ router.route("/getwatchhistory").get(jwt_verify, getuserwatchhistory);
 //importing the class instance.
 
 import { obj1 } from "../DI_classes.js/user.class.js";
-router.route("/login/through/classes").post(obj1.user_login.bind(obj1));
+router.route("/login/through/classes").post(obj1.user_login);
+router.route("/register/through/classes").post(upload.fields([{
+    name: "avatar",
+    maxCount: 1
+}, {
+    name: "coverimage",
+    maxCount: 1
+}]), obj1.user_register);
 
 
 
