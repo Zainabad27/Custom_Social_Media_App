@@ -252,6 +252,9 @@ class user_controller {
 
     update_password = async_handler(async (req, res) => {
         const { oldpassword, newpassword, confirmpassword } = req.body;
+        if(oldpassword===newpassword){
+            throw new MyError(401,"No changes made in the database.(new password is same as old password)")
+        }
         if (newpassword !== confirmpassword) {
             throw new MyError(401, "new password and confirm password does not match.");
         }

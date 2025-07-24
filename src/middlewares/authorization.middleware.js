@@ -8,7 +8,7 @@ const jwt_verify = async_handler(async (req, _, next) => {
         const accesstoken = req.cookies?.accesstoken || req.header("Authorization")?.replace("Bearer ", "");
         // const refreshtoken = req.cookies.refreshtoken
         if (!accesstoken) {
-            throw new MyError(401, "Unauthorized access. No Token.")
+            throw new MyError(401, "Unauthorized access.mamamia No Token.")
 
         }
 
