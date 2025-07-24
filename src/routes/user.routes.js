@@ -1,7 +1,5 @@
 import { Router } from "express";
 import {
-    user_register,
-    user_login,
     user_logout,
     refresh_accesstoken,
     update_password,
@@ -9,8 +7,11 @@ import {
     getuserchannelprofile,
     getuserwatchhistory
 } from "../controllers/user.controller.js";
+
+import { obj1 } from "../DI_classes.js/user.class.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { jwt_verify } from "../middlewares/authorization.middleware.js";
+
 
 const router = Router();
 
@@ -20,13 +21,13 @@ router.route("/register").post(upload.fields([{
 }, {
     name: "coverimage",
     maxCount: 1
-}]), user_register);
+}]),obj1.user_register)
 
 
-router.route("/login").post(user_login);
+router.route("/login").post(obj1.user_login);
 
 
-//secured routes(user is already logged in)
+// secured routes(user is already logged in)
 router.route("/logout").post(jwt_verify, user_logout);
 
 router.route("/refreshAccesstoken").post(refresh_accesstoken);
@@ -44,19 +45,6 @@ router.route("/c/:username/getuserprofile").get(jwt_verify, getuserchannelprofil
 router.route("/getwatchhistory").get(jwt_verify, getuserwatchhistory);
 
 
-
-//checking if the DI refactor Code is working or not?
-//importing the class instance.
-
-import { obj1 } from "../DI_classes.js/user.class.js";
-router.route("/login/through/classes").post(obj1.user_login);
-router.route("/register/through/classes").post(upload.fields([{
-    name: "avatar",
-    maxCount: 1
-}, {
-    name: "coverimage",
-    maxCount: 1
-}]), obj1.user_register);
 
 
 

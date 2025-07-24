@@ -39,10 +39,11 @@ class user_controller {
 
         const { username, email, password, fullname } = req.body;
         const dataarry = [username, email, password, fullname];
+        const dataarry2 = ["username", "email", "password", "fullname"];
         //checking if any field is left empty by the user or if the email format is incorrect.
         for (let i = 0; i < dataarry.length; i++) {
             if (dataarry[i] === "" || !dataarry[i]) {
-                throw new MyError(401, `${dataarry[i]} is Empty.`);
+                throw new MyError(401, `${dataarry2[i]} is Empty.`);
 
             }
             if (dataarry[i] === email) {
