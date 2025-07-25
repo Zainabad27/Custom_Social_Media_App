@@ -59,6 +59,10 @@ class comment_controller {
 
     get_all_comments = async_handler(async (req, res) => {
         // it fetches all the comments on a video by video title.
+        let { page=1, limit=10 } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
+        const skip = (page - 1) * limit;
         const { vidtitle } = req.body;
         const all_comments = await this.videos.aggregate([{
             $match: { vidtitle: vidtitle }
@@ -70,6 +74,12 @@ class comment_controller {
                 foreignField: "video",
                 as: "all_comments",
                 pipeline: [{
+                    $skip: skip
+                },
+                {
+                    $limit: limit
+                },
+                {
                     $lookup: {
                         from: "likes",
                         localField: "_id",
@@ -123,16 +133,42 @@ class comment_controller {
 
     edit_comment = async_handler(async (req, res) => {
         //secured route.
+        const id = req.params.id;
+        const { content } = req.body;
+
+        if (!id) {
+            throw new MyError(401, "Commment id was not given.");
+        }
+        if (!content) {
+            throw new MyError(401, "no edited content was given.");
+        }
+        const commentinstance = await this.comments.findByIdAndUpdate(
+            {
+                id
+            },
+            {
+                content: content
+            },
+            {
+                new: true
+            });
 
 
-    });
+        if (!commentinstance) {
+            throw new MyError(501, "Problem occured while Updating the comment in the database.");
+        }
 
-    delete_comment = async_handler(async (req, res) => {
-        //secured route.
+        res.status(202).json(
+            new ApiResponse(202, commentinstance,"Comment edited successfully.")
+            )
 
 
+});
 
-    })
+delete_comment = async_handler(async (req, res) => {
+    //secured route.
+
+})
 
 };
 
