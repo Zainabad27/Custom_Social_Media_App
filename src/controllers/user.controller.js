@@ -217,7 +217,7 @@ class user_controller {
 
             const userinstance = await this.users.findById(decodedtoken.id);
             if (!userinstance) {
-                throw new MyError(401, "refresh token is not if this user. Unauthorized Access.");
+                throw new MyError(401, "refresh token is not present for this user. Unauthorized Access.");
             }
             const databasetoken = userinstance.refreshtoken
             if (incoming_refreshtoken !== databasetoken) {

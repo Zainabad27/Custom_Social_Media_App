@@ -7,5 +7,6 @@ const router = Router();
 
 
 router.route("/comment/on/video").post(jwt_verify, comment_obj.comment_on_video);
+router.route("/getallcomments").get( comment_obj.get_all_comments);
 
 export default router;
