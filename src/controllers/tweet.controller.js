@@ -71,6 +71,12 @@ class tweet_controller {
 
     get_all_tweets = async_handler(async (req, res) => {
         // not secured route
+        // pagination 
+        let { page = 1, limit = 4 } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
+        const skip = (page - 1) * limit;
+
         const username = req.params?.username;
         if (!username) {
             throw new MyError(401, "Username was not given in the URL");
@@ -85,14 +91,18 @@ class tweet_controller {
                 localField: "_id",
                 foreignField: "tweet_owner",
                 as: "all_tweets",
-                pipeline: [
-                    {
-                        $project: {
-                            tweet_content: 1,
-                            tweet_media: 1,
-                            _id: 0
-                        }
+                pipeline: [{
+                    $skip: skip
+                }, {
+                    $limit: limit
+                },
+                {
+                    $project: {
+                        tweet_content: 1,
+                        tweet_media: 1,
+                        _id: 0
                     }
+                }
                 ]
             },
 
@@ -117,8 +127,36 @@ class tweet_controller {
         // }
         const data_to_send = result[0];
 
-        res.status(201).json(new ApiResponse(201, { "all tweets": data_to_send }, "Tweets fetched successfully."))
+        res.status(201).json(new ApiResponse(201, data_to_send, "Tweets fetched successfully."));
 
+    })
+
+    delete_tweet = async_handler(async (req, res) => {
+        // secured route.
+        const tweet_id = req.params.id;
+        const user_id = req.user.id;
+        if (!user_id) {
+            throw new MyError(401, "Unauthorized Access.");
+        }
+        if (!tweet_id) {
+            throw new MyError(401, "Tweet id was not given for deletion process.");
+        }
+        const tweet_instance = await this.tweets.findById(tweet_id);
+        if (!tweet_instance) {
+            throw new MyError(501, "tweet was not found in the database")
+        }
+
+        if (!(tweet_instance.tweet_owner.equals(user_id))) {
+            throw new MyError(403, "Only tweet owner can delete the tweet");
+        }
+
+        const result = await tweet_instance.deleteOne();
+
+        if (result.deletedCount === 0) {
+            throw new MyError(500, "Error occured while deleting the tweet from the database.");
+        }
+
+        res.status(200).json(new ApiResponse(200,{},"Tweet deleted successfully."));
     })
 
 

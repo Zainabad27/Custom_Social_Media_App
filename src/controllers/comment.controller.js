@@ -2,6 +2,7 @@
 import { async_handler } from "../utils/async_handler.js";
 import { MyError } from "../utils/Api_Error.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
 // dependencies
 import { comments } from "../models/comment.model.js";
 import { videos } from "../models/video.model.js";
@@ -59,7 +60,7 @@ class comment_controller {
 
     get_all_comments = async_handler(async (req, res) => {
         // it fetches all the comments on a video by video title.
-        let { page=1, limit=10 } = req.query;
+        let { page = 1, limit = 10 } = req.query;
         page = parseInt(page);
         limit = parseInt(limit);
         const skip = (page - 1) * limit;
@@ -159,20 +160,43 @@ class comment_controller {
         }
 
         res.status(202).json(
-            new ApiResponse(202, commentinstance,"Comment edited successfully.")
-            )
+            new ApiResponse(202, commentinstance, "Comment edited successfully.")
+        )
 
 
-});
+    });
 
-delete_comment = async_handler(async (req, res) => {
-    //secured route.
+    delete_comment = async_handler(async (req, res) => {
+        //secured route.
+        const comment_id = req.params.id;
+        const user_id = req.user.id;
+        if (!user_id) {
+            throw new MyError(400, "Unauthorized access.");
+        }
+        // check if the comment deletion is done by the comment owner or not.
 
-})
+        if (!comment_id) {
+            throw new MyError(401, "Comment Id was not given.")
+        }
+
+        const commentinstance = await this.comments.findById(comment_id);
+        if (!commentinstance) {
+            throw new MyError(501, "comment Id was found not in the database.");
+        }
+        if (!(commentinstance.owner.equals(new mongoose.Types.ObjectId(user_id)))) {
+            throw new MyError(403, "Only comment owner is allowed to delete the comment.");
+        }
+        const result = await commentinstance.deleteOne();
+        if (result.deletedCount === 0) {
+            throw new MyError(500, "Error while deleteing the data from the database.");
+        }
+
+        res.status(200).json(new ApiResponse(200, commentinstance, "Comment deleted successfully."));
+
+
+    })
 
 };
-
-
 
 const comment_obj = new comment_controller(comments, videos);
 
