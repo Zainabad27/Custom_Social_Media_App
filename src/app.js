@@ -45,4 +45,15 @@ import tweet_router from "./routes/tweet.routes.js";
 app.use("/api/v1/tweets", tweet_router);
 
 
+
+
+app.use((err, _, res, __) => {
+    const status = err.statusCode||500;
+    res.status(status).json({
+        success: false,
+        message: err.message || "something went wrong."
+    })
+    
+
+})
 export { app }
