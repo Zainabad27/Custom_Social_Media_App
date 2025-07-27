@@ -158,6 +158,7 @@ class tweet_controller {
 
         res.status(200).json(new ApiResponse(200,{},"Tweet deleted successfully."));
     })
+    
 
 
 };
