@@ -83,25 +83,7 @@ class video_controller {
     });
 
 
-    getvideo = async_handler(async (req, res) => {// this function is called when someone clicks on a video,it fetches the video on the basis of video title, it returns a vid URL.
-
-        const videotitle = req.body.vidtitle;
-
-        if (!videotitle) {
-            throw new MyError(401, "Video Title is essential for searching the video in the database.");
-        }
-        const vidinstance = await this.videos.findOne({ vidtitle: videotitle }).select("-thumbnail -isdeleted");
-
-        if (!vidinstance) {
-            throw new MyError(401, "Video does not exists in the database.");
-        }
-
-
-
-        res.status(201).json(new ApiResponse(201, vidinstance, "Video Fetched successfully"));
-
-
-    })
+    // getvideo;............ to be written.
 
 
 };

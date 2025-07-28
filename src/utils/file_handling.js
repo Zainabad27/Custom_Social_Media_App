@@ -28,12 +28,6 @@ const cloudinary_upload = async (filepath) => {
 
         throw new MyError(500, error?.message);
 
-
-
-
-
-
-
     }
 
 }

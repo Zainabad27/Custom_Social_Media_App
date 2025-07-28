@@ -2,7 +2,7 @@
 import { async_handler } from "../utils/async_handler.js";
 import { MyError } from "../utils/Api_Error.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-// dependencies.
+// dependencies.                                                   
 import { tweets } from "../models/tweet.model.js";
 import { users } from "../models/user.model.js";
 import { cloudinary_upload } from "../utils/file_handling.js";
@@ -67,7 +67,6 @@ class tweet_controller {
         res.status(201).json(new ApiResponse(201, {}, "Tweet was saved in the database."));
 
     });
-
 
     get_all_tweets = async_handler(async (req, res) => {
         // not secured route
