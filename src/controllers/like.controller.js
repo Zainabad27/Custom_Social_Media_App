@@ -127,7 +127,7 @@ class like_controller {
         if (!user_id) {
             throw new MyError(403, "For liking a video user should be logged in.");
         }
-       if (!(mongoose.Types.ObjectId.isValid(comment_id))) {
+        if (!(mongoose.Types.ObjectId.isValid(comment_id))) {
             throw new MyError(401, "Invalid comment Id given.");
         }
         const commentinstance = await this.comments.findById(comment_id);
@@ -162,9 +162,13 @@ class like_controller {
 
         if (!likeinstance) {
             throw new MyError(500, "Error occured in the database while saving the like docuemnt.");
-        }
+        };
 
-        res.status(200).json(new ApiResponse(200, likeinstance, "comment liked successfully."));
+        const comment = likeinstance.oncomment;
+        const likeid = likeinstance.id;
+        const owner = likeinstance.owner_of_like;
+
+        res.status(200).json(new ApiResponse(200, {comment,likeid,owner}, "comment liked successfully."));
 
 
     });
@@ -199,11 +203,11 @@ class like_controller {
         }
         ]);
 
-        if (!likeid) {
+        if (likeid.length === 0) {
             throw new MyError(501, "User Like Was not found on the video")
         }
 
-        const like_id = likeid[0]._id
+        const like_id = likeid[0]?._id
 
         const result = await this.likes.findByIdAndDelete(like_id);
 
@@ -212,6 +216,101 @@ class like_controller {
         }
 
         res.status(500, {}, "Like deleted succesfully.")
+
+
+
+    })
+    remove_twt_like = async_handler(async (req, res) => {
+        // secured route.
+        const user_id = req.user?.id;
+        const twt_id = req.params?.id;
+        if (!twt_id) {
+            throw new MyError(401, "tweet Id was not given.");
+        }
+        if (!user_id) {
+            throw new MyError(403, "Can't remove like, unauthorized access.");
+        }
+
+        const likeid = await this.likes.aggregate([{
+            $match: {
+                ontweet: new mongoose.Types.ObjectId(twt_id)
+            }
+        },
+        {
+            $match: {
+                owner_of_like: new mongoose.Types.ObjectId(user_id)
+            }
+        },
+        {
+            $project: {
+                _id: 1
+            }
+
+
+        }
+        ]);
+
+        if (likeid.length === 0) {
+            throw new MyError(501, "User Like Was not found on the tweet")
+        }
+
+        const like_id = likeid[0]?._id
+
+        const result = await this.likes.findByIdAndDelete(like_id);
+
+        if (!result || result?.deletedCount === 0) {
+            throw new MyError(500, "error while deleting the like from the databse")
+        }
+
+        res.status(200).json(new ApiResponse(200, {}, "Like removed successfully."));
+
+
+
+    })
+
+    remove_comment_like = async_handler(async (req, res) => {
+        // secured route.
+        const user_id = req.user?.id;
+        const comment_id = req.params?.id;
+        if (!comment_id) {
+            throw new MyError(401, "comment Id was not given.");
+        }
+        if (!user_id) {
+            throw new MyError(403, "Can't remove like, unauthorized access.");
+        }
+
+        const likeid = await this.likes.aggregate([{
+            $match: {
+                oncomment: new mongoose.Types.ObjectId(comment_id)
+            }
+        },
+        {
+            $match: {
+                owner_of_like: new mongoose.Types.ObjectId(user_id)
+            }
+        },
+        {
+            $project: {
+                _id: 1
+            }
+
+
+        }
+        ]);
+
+        if (likeid.length === 0) {
+            throw new MyError(501, "User Like Was not found on the comment")
+        }
+
+        const like_id = likeid[0]?._id
+
+        const result = await this.likes.findByIdAndDelete(like_id);
+
+        if (!result || result?.deletedCount === 0) {
+            throw new MyError(500, "error while deleting the like from the databse")
+        }
+
+        res.status(200).json(new ApiResponse(200, {}, "Like removed successfully."));
 
 
 
