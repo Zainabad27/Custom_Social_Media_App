@@ -49,7 +49,9 @@ import like_router from "./routes/like.routes.js";
 
 app.use("/api/v1/likes", like_router);
 
+import dashboard_router from "./routes/dashboard.routes.js";
 
+app.use("/api/v1/dashboard", dashboard_router);
 
 
 app.use((err, _, res, __) => {
