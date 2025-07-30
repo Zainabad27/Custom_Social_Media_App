@@ -343,11 +343,11 @@ class user_controller {
             throw new MyError(404, "channel does not exists.")
         }
         res.status(201).json(new ApiResponse(201, channel[0], "Profile Data fetched successfully."))
-
+        
     });
-
-
-
+    
+    
+    
     updateuserdetails = async_handler(async (req, res) => {
 
         const { email, username, fullname } = req.body;

@@ -83,7 +83,10 @@ class video_controller {
     });
 
 
-    // getvideo;............ to be written.
+    click_on_video = async_handler(async (req, res) => {
+        const vid_id = req.params.id;
+        
+    })
 
 
 };

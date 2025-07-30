@@ -146,6 +146,25 @@ class dashboard {
                     ]
                 }
 
+            },
+            {
+                $addFields:{
+                    T_comment_likes:{
+                        $size:"$liked_comments"
+                    },
+                    T_vid_likes:{
+                        $size:"$liked_vids"
+                    },
+                    T_twt_liked:{
+                        $size:"$liked_tweets"
+                    },
+                    followers:{
+                        $size:"$subscribers"
+                    },
+                    following:{
+                        $size:"$Channels_subscribed"
+                    }
+                }
             }
         ]); // pipeline ends here.
 
@@ -154,15 +173,16 @@ class dashboard {
         }
         // calculate the total views on the videos
         let total_views = 0;
-        let total_subscribers;
-        let total_subscribed_channels;
         const vidarry = stats[0].total_vids;
-        for(let i=0;i<vidarry.length;i++){
-            total_views+=parseInt(vidarry[i].views)
+        for (let i = 0; i < vidarry.length; i++) {
+            total_views += parseInt(vidarry[i].views)
         }
-        total_subscribed_channels=(stats[0].Channels_subscribed).length;
-        total_subscribers=(stats[0].subscribers).length;
-        // console.log( total_subscribed_channels=(stats[0].Channels_subscribed).length);
+        // total_subscribed_channels = (stats[0].Channels_subscribed).length;
+        // total_subscribers = (stats[0].subscribers).length;
+        // // console.log( total_subscribed_channels=(stats[0].Channels_subscribed).length);
+        // stats[0].total_channel_count = total_subscribed_channels;
+        // stats[0].total_subscriber_count = total_subscribers;
+        stats[0].total_views_on_channel = total_views;
 
         res.status(200).json(new ApiResponse(200, stats[0], "Stats fetched successfully."))
 
