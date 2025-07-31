@@ -38,7 +38,17 @@ class subscribe_controller {
     })
 
     unsubscribe = async_handler(async (req, res) => {
+        const userid = req.user?.id
+        const channelid = req.params?.id;
+        if (!channelid) {
+            throw new MyError(401, "Channel id was not given.");
+        };
+        const deleted_subscriber = await this.subscribtion.findByIdAndDelete(userid);
+        if (!deleted_subscriber) {
+            throw new MyError(404, "User was not the subscriber.")
+        }
 
+        res.status(200).json(new ApiResponse(200, deleted_subscriber, "Unsubscribed Successfully."))
     })
 };
 
