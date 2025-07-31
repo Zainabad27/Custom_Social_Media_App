@@ -148,22 +148,32 @@ class dashboard {
 
             },
             {
-                $addFields:{
-                    T_comment_likes:{
-                        $size:"$liked_comments"
+                $addFields: {
+                    T_comment_likes: {
+                        $size: "$liked_comments"
                     },
-                    T_vid_likes:{
-                        $size:"$liked_vids"
+                    T_vid_likes: {
+                        $size: "$liked_vids"
                     },
-                    T_twt_liked:{
-                        $size:"$liked_tweets"
+                    T_twt_liked: {
+                        $size: "$liked_tweets"
                     },
-                    followers:{
-                        $size:"$subscribers"
+                    followers: {
+                        $size: "$subscribers"
                     },
-                    following:{
-                        $size:"$Channels_subscribed"
+                    following: {
+                        $size: "$Channels_subscribed"
                     }
+                }
+            },
+            {
+                $project: {
+                    T_comment_likes: 1,
+                    T_vid_likes: 1,
+                    T_twt_liked: 1,
+                    followers: 1,
+                    following: 1,
+                    total_vids: 1
                 }
             }
         ]); // pipeline ends here.
@@ -174,6 +184,9 @@ class dashboard {
         // calculate the total views on the videos
         let total_views = 0;
         const vidarry = stats[0].total_vids;
+        if(!vidarry){
+            throw new MyError(500,"Error ocuured while fetching the data from DB.")
+        }
         for (let i = 0; i < vidarry.length; i++) {
             total_views += parseInt(vidarry[i].views)
         }
@@ -184,14 +197,58 @@ class dashboard {
         // stats[0].total_subscriber_count = total_subscribers;
         stats[0].total_views_on_channel = total_views;
 
+        delete stats[0].total_vids;
+
         res.status(200).json(new ApiResponse(200, stats[0], "Stats fetched successfully."))
 
 
 
+    });
+
+
+    all_videos = async_handler(async (req, res) => {
+        const userid = req.user?.id;
+
+        const allvids = await this.users.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(userid)
+                }
+            },
+            {
+                $lookup: {
+                    from: "videos",
+                    localField: "_id",
+                    foreignField: "owner",
+                    as: "total_vids",
+                    pipeline: [
+                        {
+                            $project: {
+                                views: 1,
+                                vidduration: 1,
+                                thumbnail: 1,
+                                vidtitle: 1,
+                                owner: 1
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $project:{
+                    username:1,
+                    avatar:1,
+                    email:1,
+                    total_vids:1
+                }
+            }
+        ]); // pipeline ends here.
+
+        res.status(200).json(new ApiResponse(200, allvids, "All videos fetched successfully."))
     })
 
 
-};
+}; // class ends here
 
 
 const dashboard_obj = new dashboard(users);

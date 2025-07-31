@@ -85,7 +85,28 @@ class video_controller {
 
     click_on_video = async_handler(async (req, res) => {
         const vid_id = req.params.id;
-        
+        // send back the video data and also increase the view count.
+
+        const vidinstance = await this.videos.findOneAndUpdate(
+            {
+                _id: vid_id
+            },
+            {
+                $inc: { view: 1 }
+            },
+            {
+                new: true
+            }
+        );
+        if (!vidinstance) {
+            throw new MyError(500, "Video does not exists in the Database.");
+        };
+
+        res.status(200).json(new ApiResponse(200, vidinstance, "Video fetched successfully."));
+
+
+
+
     })
 
 

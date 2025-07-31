@@ -4,7 +4,11 @@ import { subscribe_obj } from "../controllers/subscribe.controller.js";
 
 const router = Router();
 
-router.route("/subscribe/channel").post(jwt_verify,subscribe_obj.subscribe);
+router.route("/c/:id/subscribe/channel").post(jwt_verify,subscribe_obj.subscribe);
 
 
-export default router;
+
+router.route("/c/:id/unsubscribe/channel").post(jwt_verify,subscribe_obj.unsubscribe);
+
+
+export default router;//l
