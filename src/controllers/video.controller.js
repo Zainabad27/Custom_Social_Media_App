@@ -5,12 +5,14 @@ import { MyError } from "../utils/Api_Error.js";
 import mongoose from "mongoose";
 //dependencies.
 import { videos } from "../models/video.model.js";
+import { users } from "../models/user.model.js";
 import { cloudinary_upload } from "../utils/file_handling.js";
 
 
 class video_controller {
-    constructor(videomodel, cloudinary) {
+    constructor(videomodel, usermodel, cloudinary) {
         this.videos = videomodel;
+        this.users = usermodel;
         this.cloudinary_upload = cloudinary;
 
     }
@@ -92,9 +94,6 @@ class video_controller {
 
         // if user clicks on his own video no increment in the views only clicking on someone else video will increase the video views.
 
-
-
-
         const vidinstance = await this.videos.findOneAndUpdate(
             {
                 _id: vid_id,
@@ -146,6 +145,26 @@ class video_controller {
             throw new MyError(500, "Error while fetching the Data");
         }
 
+        // I have to add this video id into the user watch history too.
+        this.users.findOneAndUpdate(
+            {
+                _id:userid
+            },
+            [
+                {
+                    $set:{
+                        watchhistory:{
+                            
+
+                        }
+                    }
+                }
+            ]
+        )
+
+
+
+
 
         res.status(200).json(new ApiResponse(200, data_to_send[0], "Video fetched successfully."));
 
@@ -157,7 +176,7 @@ class video_controller {
 
 };
 
-const video_obj = new video_controller(videos, cloudinary_upload);
+const video_obj = new video_controller(videos, users, cloudinary_upload);
 
 export { video_obj }
 
