@@ -86,42 +86,55 @@ class video_controller {
 
     click_on_video = async_handler(async (req, res) => {
         const vid_id = req.params.id;
-        const userid=req.user?.id;
+        const userid = req.user?.id;
         // send back the video data and also increase the view count.
 
 
-        // if user clicks on his own video no increment in the views only clicking on someone else video will //increase the video views.
-        
+        // if user clicks on his own video no increment in the views only clicking on someone else video will increase the video views.
+
+
+
+
         const vidinstance = await this.videos.findOneAndUpdate(
             {
-                _id: vid_id
+                _id: vid_id,
             },
-            {
-                $inc: { views: 1 }
-            },
-        );
+            [
+                {
+                    $set: {
+                        views: {
+                            $cond: {
+                                if: { $ne: ["$owner", new mongoose.Types.ObjectId(userid)] },
+                                then: { $add: ["$views", 1] },
+                                else: "$views"
+                            }
+                        }
+                    }
+                }
+            ]);
         if (!vidinstance) {
             throw new MyError(500, "Video does not exists in the Database.");
         };
-        const data_to_send=await this.videos.aggregate([
+
+        const data_to_send = await this.videos.aggregate([
             {
-                $match:{
+                $match: {
                     _id: new mongoose.Types.ObjectId(vid_id)
                 }
             },
             {
-                $lookup:{
-                    from:"users",
-                    localField:"owner",
-                    foreignField:"_id",
-                    as:"Uploader",
-                    pipeline:[
+                $lookup: {
+                    from: "users",
+                    localField: "owner",
+                    foreignField: "_id",
+                    as: "Uploader",
+                    pipeline: [
                         {
-                            $project:{
-                                username:1,
-                                avatar:1,
-                                email:1,
-                                _id:0
+                            $project: {
+                                username: 1,
+                                avatar: 1,
+                                email: 1,
+                                _id: 0
                             }
                         }
                     ]
@@ -129,10 +142,10 @@ class video_controller {
             }
         ]);
 
-        if(data_to_send.length===0){
-            throw new MyError(500,"Error while fetching the Data");
+        if (data_to_send.length === 0) {
+            throw new MyError(500, "Error while fetching the Data");
         }
-        
+
 
         res.status(200).json(new ApiResponse(200, data_to_send[0], "Video fetched successfully."));
 
