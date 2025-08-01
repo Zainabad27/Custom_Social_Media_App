@@ -20,7 +20,7 @@ router.route("/uploading-video").post(
   video_obj.upload_video);
 
 
- router.route("/c/:id/click/video").get(video_obj.click_on_video);
+ router.route("/c/:id/click/video").get(jwt_verify,video_obj.click_on_video);
 
 
 export default router;

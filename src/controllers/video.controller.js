@@ -2,6 +2,7 @@
 import { async_handler } from "../utils/async_handler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { MyError } from "../utils/Api_Error.js";
+import mongoose from "mongoose";
 //dependencies.
 import { videos } from "../models/video.model.js";
 import { cloudinary_upload } from "../utils/file_handling.js";
@@ -85,24 +86,55 @@ class video_controller {
 
     click_on_video = async_handler(async (req, res) => {
         const vid_id = req.params.id;
+        const userid=req.user?.id;
         // send back the video data and also increase the view count.
 
+
+        // if user clicks on his own video no increment in the views only clicking on someone else video will //increase the video views.
+        
         const vidinstance = await this.videos.findOneAndUpdate(
             {
                 _id: vid_id
             },
             {
-                $inc: { view: 1 }
+                $inc: { views: 1 }
             },
-            {
-                new: true
-            }
         );
         if (!vidinstance) {
             throw new MyError(500, "Video does not exists in the Database.");
         };
+        const data_to_send=await this.videos.aggregate([
+            {
+                $match:{
+                    _id: new mongoose.Types.ObjectId(vid_id)
+                }
+            },
+            {
+                $lookup:{
+                    from:"users",
+                    localField:"owner",
+                    foreignField:"_id",
+                    as:"Uploader",
+                    pipeline:[
+                        {
+                            $project:{
+                                username:1,
+                                avatar:1,
+                                email:1,
+                                _id:0
+                            }
+                        }
+                    ]
+                }
+            }
+        ]);
 
-        res.status(200).json(new ApiResponse(200, vidinstance, "Video fetched successfully."));
+        if(data_to_send.length===0){
+            throw new MyError(500,"Error while fetching the Data");
+        }
+        
+
+        res.status(200).json(new ApiResponse(200, data_to_send[0], "Video fetched successfully."));
 
 
 
