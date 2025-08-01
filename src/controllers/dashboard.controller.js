@@ -4,7 +4,6 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 
 
 import { users } from "../models/user.model.js";
-import { videos } from "../models/video.model.js";
 import mongoose from "mongoose";
 
 
@@ -149,10 +148,10 @@ class dashboard {
             },
             {
                 $addFields: {
-                    T_comment_likes: {
+                    T_comment_liked: {
                         $size: "$liked_comments"
                     },
-                    T_vid_likes: {
+                    T_vid_liked: {
                         $size: "$liked_vids"
                     },
                     T_twt_liked: {
@@ -168,8 +167,8 @@ class dashboard {
             },
             {
                 $project: {
-                    T_comment_likes: 1,
-                    T_vid_likes: 1,
+                    T_comment_liked: 1,
+                    T_vid_liked: 1,
                     T_twt_liked: 1,
                     followers: 1,
                     following: 1,
@@ -184,8 +183,8 @@ class dashboard {
         // calculate the total views on the videos
         let total_views = 0;
         const vidarry = stats[0].total_vids;
-        if(!vidarry){
-            throw new MyError(500,"Error ocuured while fetching the data from DB.")
+        if (!vidarry) {
+            throw new MyError(500, "Error ocuured while fetching the data from DB.")
         }
         for (let i = 0; i < vidarry.length; i++) {
             total_views += parseInt(vidarry[i].views)
@@ -235,16 +234,84 @@ class dashboard {
                 }
             },
             {
-                $project:{
-                    username:1,
-                    avatar:1,
-                    email:1,
-                    total_vids:1
+                $project: {
+                    username: 1,
+                    avatar: 1,
+                    email: 1,
+                    total_vids: 1
                 }
             }
         ]); // pipeline ends here.
 
         res.status(200).json(new ApiResponse(200, allvids, "All videos fetched successfully."))
+    })
+
+
+    total_likes_on_user = async_handler(async (req, res) => {
+        // secured route 
+        // this function fetches the total likes of the user on his uploaded videos,tweets,comments;
+        const userid = new mongoose.Types.ObjectId(req.user.id);
+        console.log(userid);
+        const total_likes = await this.users.aggregate([
+            {
+                $match: userid
+            },
+            {
+                $lookup: {
+                    from: "videos",
+                    localField: "_id",
+                    foreignField: "owner",
+                    as: "likes_on_videos",
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: "likes",
+                                localField: "_id",
+                                foreignField: "onvideo",
+                                as: "Tlikes"
+                            }
+                        },
+                        {
+                            $addFields: {
+                                no_likes: { $size: "$Tlikes" }
+                            }
+                        },
+                        {
+                            $project: {
+                                no_likes: 1,
+                                _id: 0
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $project: {
+                    likes_on_videos: 1,
+                    _id: 0
+                }
+            }
+        ]);
+
+        if (total_likes.length === 0) {
+            throw new MyError(401, "user does not exists in the DB");
+        }
+        if (total_likes[0].likes_on_videos.length === 0) {
+            throw new MyError(401, "User has not uploaded any video.")
+        };
+
+
+        let likearry = total_likes[0].likes_on_videos;
+        let likes_count = 0;
+        for (let i = 0; i < likearry.length; i++) {
+            likes_count += parseInt(likearry[i]);
+        };
+
+
+
+        res.status(200).json(new ApiResponse(200, likes_count, "Like count fetched."))
+
+
     })
 
 

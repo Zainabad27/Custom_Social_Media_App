@@ -146,20 +146,18 @@ class video_controller {
         }
 
         // I have to add this video id into the user watch history too.
-        this.users.findOneAndUpdate(
+        const userinstance = await this.users.findOneAndUpdate(
             {
-                _id:userid
+                _id: userid
             },
-            [
-                {
-                    $set:{
-                        watchhistory:{
-                            
-
-                        }
-                    }
+            {
+                $push: {
+                    watchhistory: vid_id
                 }
-            ]
+            },
+            {
+                new: true
+            }
         )
 
 

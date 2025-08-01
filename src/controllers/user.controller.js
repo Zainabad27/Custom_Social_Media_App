@@ -252,8 +252,8 @@ class user_controller {
 
     update_password = async_handler(async (req, res) => {
         const { oldpassword, newpassword, confirmpassword } = req.body;
-        if(oldpassword===newpassword){
-            throw new MyError(401,"No changes made in the database.(new password is same as old password)")
+        if (oldpassword === newpassword) {
+            throw new MyError(401, "No changes made in the database.(new password is same as old password)")
         }
         if (newpassword !== confirmpassword) {
             throw new MyError(401, "new password and confirm password does not match.");
@@ -343,11 +343,11 @@ class user_controller {
             throw new MyError(404, "channel does not exists.")
         }
         res.status(201).json(new ApiResponse(201, channel[0], "Profile Data fetched successfully."))
-        
+
     });
-    
-    
-    
+
+
+
     updateuserdetails = async_handler(async (req, res) => {
 
         const { email, username, fullname } = req.body;
@@ -462,7 +462,7 @@ class user_controller {
                                 from: "users",
                                 localField: "owner",
                                 foreignField: "_id",
-                                as: "owner",
+                                as: "ownervid",
                                 pipeline: [
                                     {
                                         $project: {
@@ -480,10 +480,44 @@ class user_controller {
         ])
 
 
-        res.status(201).json(new ApiResponse(201, watched[0].watchhistory, `Watch history fetched of ${req.user.username}`))
+        res.status(201).json(new ApiResponse(201, watched[0].vidswatched, `Watch history fetched of ${req.user.username}`))
 
 
 
+    })
+
+
+    clear_watch_history = async_handler(async (req, res) => {
+        // secured user.
+        const userid = req.user.id;
+        if (!userid) {
+            throw new MyError(403, "User is not logged in.");
+        };
+
+        const userinstance = await this.users.findByIdAndUpdate(
+            {
+                _id: userid
+            },
+            {
+                $set:
+                {
+                    watchhistory: []
+                }
+
+            },
+            {
+                new: true
+            }
+        );
+
+        if (!userinstance) {
+            throw new MyError(401, "User was not found in the database.")
+        }
+        if (userinstance.watchhistory.length !== 0) {
+            throw new MyError(500, "Some error occured in the database while clearing the history.")
+        };
+
+        res.status(200).json(new ApiResponse(200, userinstance, "History cleared successfully."))
     })
 
 }; // class ends here //

@@ -35,6 +35,8 @@ router.route("/update-user/details").patch(jwt_verify, upload.fields([{
 router.route("/c/:username/getuserprofile").get(jwt_verify, obj1.getuserchannelprofile);
 router.route("/getwatchhistory").get(jwt_verify, obj1.getuserwatchhistory);
 
+router.route("/clear/watchhistory").post(jwt_verify, obj1.clear_watch_history);
+
 
 
 
