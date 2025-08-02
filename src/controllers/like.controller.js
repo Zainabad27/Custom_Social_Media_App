@@ -74,6 +74,7 @@ class like_controller {
     like_tweet = async_handler(async (req, res) => {
         const tweet_id = req.params.id;
         const user_id = req.user?.id;
+
         if (!user_id) {
             throw new MyError(403, "For liking a video user should be logged in.");
         }
@@ -168,7 +169,7 @@ class like_controller {
         const likeid = likeinstance.id;
         const owner = likeinstance.owner_of_like;
 
-        res.status(200).json(new ApiResponse(200, {comment,likeid,owner}, "comment liked successfully."));
+        res.status(200).json(new ApiResponse(200, { comment, likeid, owner }, "comment liked successfully."));
 
 
     });
@@ -215,7 +216,7 @@ class like_controller {
             throw new MyError(500, "error while deleting the like from the databse")
         }
 
-        res.status(500, {}, "Like deleted succesfully.")
+        res.status(200).json(new ApiResponse(200, {}, "Like deleted succesfully."));
 
 
 

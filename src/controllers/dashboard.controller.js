@@ -250,11 +250,13 @@ class dashboard {
     total_likes_on_user = async_handler(async (req, res) => {
         // secured route 
         // this function fetches the total likes of the user on his uploaded videos,tweets,comments;
-        const userid = new mongoose.Types.ObjectId(req.user.id);
-        console.log(userid);
+        const userid = req.user.id;
+
         const total_likes = await this.users.aggregate([
             {
-                $match: userid
+                $match: {
+                    _id: new mongoose.Types.ObjectId(userid)
+                }
             },
             {
                 $lookup: {
@@ -268,17 +270,75 @@ class dashboard {
                                 from: "likes",
                                 localField: "_id",
                                 foreignField: "onvideo",
-                                as: "Tlikes"
+                                as: "Tlikesvid"
                             }
                         },
                         {
                             $addFields: {
-                                no_likes: { $size: "$Tlikes" }
+                                no_likesvid: { $size: "$Tlikesvid" }
                             }
                         },
                         {
                             $project: {
-                                no_likes: 1,
+                                no_likesvid: 1,
+                                _id: 0
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $lookup: {
+                    from: "tweets",
+                    localField: "_id",
+                    foreignField: "tweet_owner",
+                    as: "likes_on_tweets",
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: "likes",
+                                localField: "_id",
+                                foreignField: "ontweet",
+                                as: "Tlikestwt"
+                            }
+                        },
+                        {
+                            $addFields: {
+                                no_likestwt: { $size: "$Tlikestwt" }
+                            }
+                        },
+                        {
+                            $project: {
+                                no_likestwt: 1,
+                                _id: 0
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $lookup: {
+                    from: "comments",
+                    localField: "_id",
+                    foreignField: "owner",
+                    as: "likes_on_comments",
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: "likes",
+                                localField: "_id",
+                                foreignField: "oncomment",
+                                as: "Tlikescmt"
+                            }
+                        },
+                        {
+                            $addFields: {
+                                no_likescmt: { $size: "$Tlikescmt" }
+                            }
+                        },
+                        {
+                            $project: {
+                                no_likescmt: 1,
                                 _id: 0
                             }
                         }
@@ -288,31 +348,52 @@ class dashboard {
             {
                 $project: {
                     likes_on_videos: 1,
+                    likes_on_tweets: 1,
+                    likes_on_comments: 1,
                     _id: 0
                 }
             }
         ]);
 
+        console.log(total_likes)
+
         if (total_likes.length === 0) {
             throw new MyError(401, "user does not exists in the DB");
         }
-        if (total_likes[0].likes_on_videos.length === 0) {
-            throw new MyError(401, "User has not uploaded any video.")
+
+
+
+        let twtlikearry = total_likes[0].likes_on_tweets;
+        let cmtlikearry = total_likes[0].likes_on_comments;
+        let vidlikearry = total_likes[0].likes_on_videos;
+
+        
+        let twtlikes_count = 0;
+        let cmtlikes_count = 0;
+        let vidlikes_count = 0;
+        for (let i = 0; i < twtlikearry.length; i++) {
+            twtlikes_count += parseInt(twtlikearry[i].no_likestwt);
+        };
+        for (let i = 0; i < cmtlikearry.length; i++) {
+            cmtlikes_count += parseInt(cmtlikearry[i].no_likescmt);
+        };
+        for (let i = 0; i < vidlikearry.length; i++) {
+            vidlikes_count += parseInt(vidlikearry[i].no_likesvid);
         };
 
 
-        let likearry = total_likes[0].likes_on_videos;
-        let likes_count = 0;
-        for (let i = 0; i < likearry.length; i++) {
-            likes_count += parseInt(likearry[i]);
-        };
+
+        res.status(200).json(new ApiResponse(
+            200,
+            {
+                twtlikes_count,
+                cmtlikes_count,
+                vidlikes_count
+            },
+            "Like count fetched."))
 
 
-
-        res.status(200).json(new ApiResponse(200, likes_count, "Like count fetched."))
-
-
-    })
+    });
 
 
 }; // class ends here
