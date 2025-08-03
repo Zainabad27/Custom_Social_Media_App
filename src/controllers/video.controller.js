@@ -9,6 +9,7 @@ import { users } from "../models/user.model.js";
 import { cloudinary_upload } from "../utils/file_handling.js";
 
 
+
 class video_controller {
     constructor(videomodel, usermodel, cloudinary) {
         this.videos = videomodel;
@@ -168,6 +169,125 @@ class video_controller {
 
 
 
+
+    });
+
+    update_video = async_handler(async (req, res) => {
+        // secured route
+        // update video details like description, title etc.
+
+        /*
+       1: I have to check if the user is the owner of the video, cuz only owner can edit vid details
+       2: I have to check which details are updated so that only those detail i would update in the database.
+
+       */
+        const userid = req.user?.id;
+        const vidid = req.params?.id;
+        const description = req.body?.description;
+        const vidtitle = req.body?.vidtitle;
+        // if video title or description is given an empty string no updation in the database occurrs.
+        let arry = [description, vidtitle];
+        let name = ["description", "video title"]
+        for (let i = 0; i < arry.length; i++) {
+            if (arry[i] === "") {
+
+                throw new MyError(400, `${name[i]} is Empty. It is Required!`)
+
+            }
+        }
+        const thumbnail = req.file
+
+        let thumbnail_url = undefined;
+        if (thumbnail) {
+            const local_path = thumbnail.path;
+            const cloudinary_response = await this.cloudinary_upload(local_path);
+
+            if (!cloudinary_response) {
+                throw new MyError(500, "Some error occured in cloudinary while updating the thumbnail");
+            }
+            console.log("see this", cloudinary_response)
+
+            thumbnail_url = cloudinary_response.url;
+        }
+
+
+        // console.log(thumbnail_url)
+        const vidinstance = await this.videos.findOneAndUpdate({
+            _id: vidid,
+            owner: userid
+        },
+            [
+                {
+                    $set: {
+                        description: {
+                            $cond: {
+                                if: { $ne: [description, undefined || null] },
+                                then: description,
+                                else: "$description"
+                            }
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        vidtitle: {
+                            $cond: {
+                                if: { $ne: [vidtitle, undefined || null] },
+                                then: vidtitle,
+                                else: "$vidtitle"
+                            }
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        thumbnail: {
+                            $cond: {
+                                if: { $ne: [thumbnail_url, undefined || null] },
+                                then: thumbnail_url,
+                                else: "$thumbnail"
+                            }
+                        }
+                    }
+                }
+            ],
+            { returnDocument: "after" });
+
+        if (!vidinstance) {
+            throw new MyError(400, "Only owner can update the video details.");
+        }
+
+        res.status(200).json(new ApiResponse(200,
+            {
+                vidinstance
+            },
+            "details updated successfully."
+        ));
+
+
+    })
+
+
+    delete_video = async_handler(async (req, res) => {
+        const vidid = req.params?.id;
+        if (!vidid) {
+            throw new MyError(400, "Video id was not given");
+        }
+
+        const userid = req.user.id;
+
+        const vidinstance = await this.videos.findOneAndDelete({
+            _id: vidid,
+            owner: userid
+        });
+
+        if (!vidinstance) {
+            throw new MyError(400, "Video was not found in the database.")
+        };
+
+        vidinstance.isdeleted=true
+
+        res.status(200).json(new ApiResponse(200, vidinstance, "Video deleted successfully."));
 
     })
 

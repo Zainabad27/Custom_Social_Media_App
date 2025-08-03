@@ -518,6 +518,41 @@ class user_controller {
         };
 
         res.status(200).json(new ApiResponse(200, userinstance, "History cleared successfully."))
+    });
+
+
+    delete_user = async_handler(async (req, res) => {
+        // if a user deletes his account all of his tweets/videos/comments/likes should be deleted too.
+        // deleting likes would be too much computational expense so we will just delete the mainstream media(video/tweets)
+
+        const userid = req.user.id;
+        const confirm = req.body.confirm;
+        if (confirm !== "I want to delete my account") {
+            throw new MyError(400, "Account was not deleted. Conformation failed.");
+        };
+        const userinstance = await this.users.findByIdAndDelete({
+            _id: userid
+        });
+
+    //    await this.users.aggregate(
+    //         [
+    //             {
+    //                 $match: {
+    //                     _id: new mongoose.Types.ObjectId(userid);
+    //                 }
+    //             },
+    //             {
+    //                 $lookup:{
+    //                     from:"videos",
+    //                     localField:"_id",
+    //                     foreignField:"owner"
+    //                 }
+
+    //             }
+    //         ]
+    //     )
+
+        res.status(200).clearCookie("accesstoken", options).clearCookie("refreshtoken", options).json(new ApiResponse(200, userinstance, "user account was deleted perminatily."))
     })
 
 }; // class ends here //
