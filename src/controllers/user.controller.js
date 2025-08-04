@@ -534,25 +534,12 @@ class user_controller {
             _id: userid
         });
 
-    //    await this.users.aggregate(
-    //         [
-    //             {
-    //                 $match: {
-    //                     _id: new mongoose.Types.ObjectId(userid);
-    //                 }
-    //             },
-    //             {
-    //                 $lookup:{
-    //                     from:"videos",
-    //                     localField:"_id",
-    //                     foreignField:"owner"
-    //                 }
+        res.status(200).clearCookie("accesstoken", options).clearCookie("refreshtoken", options).json(new ApiResponse(200, userinstance, "user account was deleted perminatily."));
 
-    //             }
-    //         ]
-    //     )
 
-        res.status(200).clearCookie("accesstoken", options).clearCookie("refreshtoken", options).json(new ApiResponse(200, userinstance, "user account was deleted perminatily."))
+        setImmediate(()=>{
+            
+        })
     })
 
 }; // class ends here //

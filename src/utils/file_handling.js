@@ -17,7 +17,7 @@ const cloudinary_upload = async (filepath) => {
 
         }
         const cloudinary_response = await cloudinary.uploader.upload(filepath)
-        console.log("File uploaded Successfully to Cloudinary at this URL: ", cloudinary_response.url);
+        //console.log("File uploaded Successfully to Cloudinary at this URL: ", cloudinary_response.url);
         fs.unlinkSync(filepath);//removing file from OS
         return cloudinary_response;
 
