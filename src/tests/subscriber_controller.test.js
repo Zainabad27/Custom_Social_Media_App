@@ -10,12 +10,16 @@ describe("Testing the subscribtion.", () => {
     let accesstoken;
     let subscriberid;
     let channelid;
-    beforeEach(async () => {
+    beforeEach(async()=>{
+         await subscribtions.deleteMany({});
+    })
+    beforeAll(async () => {
         await users.deleteMany({});
+       
         // user that will subscribe.
 
         const subscriber = await users.create({
-            username: "zainabad",
+            username: "zainabad123",
             password: "zain123",
             email: "zain@gmail.com",
             avatar: "http://res.cloudinary.com/zainabad27/image/upload/v1753292672/xbksaqie8af8nbiibwnp.jpg",
@@ -35,9 +39,10 @@ describe("Testing the subscribtion.", () => {
         channelid = userinstance.id;
 
         const res = await request(app).post("/api/v1/users/login").send({
-            username: "zainabad",
+            username: "zainabad123",
             password: "zain123"
         });
+        console.log(res.body.message)
         accesstoken = res.body.data.new_accesstoken;
     });
 
@@ -63,12 +68,15 @@ describe("Testing the subscribtion.", () => {
 
 
     });
-    it("Should unsubscribe the user", async () => {
+    it("Should unsubscribe the channel", async () => {
         await subscribtions.create({
             subscriber: subscriberid,
             channel: channelid
         })
+
         const res = await request(app).post(`/api/v1/subscribers/c/${channelid}/unsubscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
+
+     
 
 
 
@@ -82,7 +90,7 @@ describe("Testing the subscribtion.", () => {
 
 
 
-    afterEach(async () => {
+    afterAll(async () => {
         await users.deleteMany({});
         await subscribtions.deleteMany({});
     })

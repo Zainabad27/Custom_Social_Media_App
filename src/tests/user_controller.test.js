@@ -161,5 +161,10 @@ describe("testing the user controller(logout)", () => {
             confirmpassword: "123zain"
         });
         expect(res.body.message).toBe("No changes made in the database.(new password is same as old password)");
+    });
+
+
+      afterAll(async () => {
+        await users.deleteMany({});
     })
 })
