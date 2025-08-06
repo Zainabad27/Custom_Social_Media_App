@@ -3,9 +3,11 @@ import { MyError } from "../utils/Api_Error.js";
 import mongoose from "mongoose";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { subscribtions } from "../models/subscribtion.model.js";
+import { users } from "../models/user.model.js";
 class subscribe_controller {
-    constructor(subsmodel) {
-        this.subscribtion = subsmodel
+    constructor(subsmodel,usermodel) {
+        this.subscribtion = subsmodel;
+        this.users=usermodel;
 
     };
 
@@ -13,13 +15,23 @@ class subscribe_controller {
     subscribe = async_handler(async (req, res) => {
         // secured route.
         const channelid = req.params.id;
-        const userid = req.user.id;
-        if((new mongoose.Types.ObjectId(channelid)).equals(new mongoose.Types.ObjectId(userid))){
-            throw new MyError(403,"A user cannot subscribe itself.")
-        }
+        if (!mongoose.Types.ObjectId.isValid(channelid)) {
+            throw new MyError(400, "not a valid mongoose ID")
+        };
         if (!channelid) {
             throw new MyError(401, "Channel Id was not given.");
         }
+
+        // checking, does the Channel even exists in DB or not.
+        const channel_exists=await this.users.findById(channelid);
+        if(!channel_exists){
+            throw new MyError(400,"The channel you are trying to subscribe, does not exists.")
+        }
+        const userid = req.user.id;
+        if ((new mongoose.Types.ObjectId(channelid)).equals(new mongoose.Types.ObjectId(userid))) {
+            throw new MyError(403, "A user cannot subscribe itself.")
+        }
+
         const already_subscribed = await this.subscribtion.findOne({
             subscriber: userid,
             channel: channelid
@@ -61,6 +73,6 @@ class subscribe_controller {
     })
 };
 
-const subscribe_obj = new subscribe_controller(subscribtions);
+const subscribe_obj = new subscribe_controller(subscribtions,users);
 
 export { subscribe_obj }

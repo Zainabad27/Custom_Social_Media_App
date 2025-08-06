@@ -4,8 +4,9 @@ import { app } from "../app.js";
 import { users } from "../models/user.model.js";
 import { subscribtions } from "../models/subscribtion.model.js";
 
-//---------------------------------------------------------------------------------------------------------------------//
-describe("Testing the subscribtion.", () => {
+
+
+describe("Testing the subscribtion controller.", () => {
     //LOCAL HOOKS
     let accesstoken;
     let subscriberid;
@@ -42,7 +43,7 @@ describe("Testing the subscribtion.", () => {
             username: "zainabad123",
             password: "zain123"
         });
-        console.log(res.body.message)
+      
         accesstoken = res.body.data.new_accesstoken;
     });
 
@@ -86,6 +87,64 @@ describe("Testing the subscribtion.", () => {
         expect(res.body.success).toBe(true);
 
     });
+
+
+    it("should not subscribe the channel (invalid mongoose id)", async ()=>{
+        const res = await request(app).post(`/api/v1/subscribers/c/6874e79b48f880c2b9218/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
+
+     
+
+
+
+        expect(res.body.message).toBe("not a valid mongoose ID");
+      
+
+
+    })
+
+    it("should not subscribe the channel (channel does not exists in db.)", async ()=>{
+        const res = await request(app).post(`/api/v1/subscribers/c/6874e79b48f880c2b9211d84/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
+
+     
+
+
+
+        expect(res.body.message).toBe("The channel you are trying to subscribe, does not exists.");
+      
+
+
+    });
+
+    it("should not subscribe the channel (already a subscriber)", async ()=>{
+        await subscribtions.create({
+            subscriber: subscriberid,
+            channel: channelid
+        })
+        const res = await request(app).post(`/api/v1/subscribers/c/${channelid}/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
+
+     
+
+
+
+        expect(res.body.message).toBe("User is already a subscriber");
+      
+
+
+    });
+
+    it("should not subscribe the channel (already a subscriber)", async ()=>{
+        
+        const res = await request(app).post(`/api/v1/subscribers/c/${subscriberid}/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
+
+     
+
+
+
+        expect(res.body.message).toBe("A user cannot subscribe itself.");
+      
+
+
+    })
 
 
 
