@@ -1,32 +1,10 @@
 import request from "supertest";
 import { afterAll, beforeAll, it, expect, describe, beforeEach, afterEach } from "vitest";
 import { app } from "../app.js";
-import { connect_testing_db } from "../database/testing_db.js";
-import mongoose from "mongoose";
 import { users } from "../models/user.model.js";
 import { subscribtions } from "../models/subscribtion.model.js";
 
 //---------------------------------------------------------------------------------------------------------------------//
-
-
-import dotenv from 'dotenv';
-import { subscribe } from "node:diagnostics_channel";
-dotenv.config({
-    path: "./.env"
-});
-//---------------GLOBAL HOOKS----------------------//
-
-beforeAll(async () => {
-    await connect_testing_db();
-    console.log("Testing db connected.");
-});
-
-
-
-afterAll(async () => {
-    await mongoose.connection.close();
-});
-//---------------------------------------------------//
 describe("Testing the subscribtion.", () => {
     //LOCAL HOOKS
     let accesstoken;

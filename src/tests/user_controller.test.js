@@ -1,8 +1,6 @@
 import request from "supertest";
 import { afterAll, beforeAll, it, expect, describe, beforeEach } from "vitest";
 import { app } from "../app.js";
-import { connect_testing_db } from "../database/testing_db.js";
-import mongoose from "mongoose";
 import { users } from "../models/user.model.js";
 
 
@@ -13,27 +11,6 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 //---------------------------------------------------------------------------------------------------------------------//
-
-
-import dotenv from 'dotenv';
-dotenv.config({
-    path: "./.env"
-});
-//---------------GLOBAL HOOKS----------------------//
-
-beforeAll(async () => {
-    await connect_testing_db();
-    console.log("Testing db connected.");
-});
-
-
-
-afterAll(async () => {
-    await mongoose.connection.close();
-});
-//---------------------------------------------------//
-
-
 
 describe("testing the user controller(register).", () => {
     //LOCAL HOOKS
@@ -63,7 +40,7 @@ describe("testing the user controller(register).", () => {
             .field("email", "abcd4@gmail.com")
             .field("fullname", "zainabad4")
 
-        // expect(res.status).toBe(400);
+         expect(res.status).toBe(400);
         expect(res.body.message).toBe("Avatar is compulsory but was not given.");
     });
     it("should not register a user cuz username is not given", async () => {
@@ -109,7 +86,7 @@ describe("testing the user controller(Login).", () => {
         })
 
         expect(res.status).toBe(201);
-        // expect(res.Cookie).toEqual(res.Cookie)
+         expect(res.Cookie).toEqual(res.Cookie)
     })
     it("should not login the user cuz username does ont exists in the DB.", async () => {
         const res = await request(app).post("/api/v1/users/login").send({
@@ -137,7 +114,7 @@ describe("testing the user controller(Login).", () => {
 describe("testing the user controller(logout)", () => {
     let accesstoken;
     beforeEach(async () => {
-        await users.deleteMany({});
+         await users.deleteMany({});
         await users.create({
             username: "zainabad",
             password: "zain123",
@@ -151,7 +128,7 @@ describe("testing the user controller(logout)", () => {
             username: "zainabad",
             password: "zain123"
         });
-        accesstoken=res.body.data.new_accesstoken;
+        accesstoken=res.body.data?.new_accesstoken;
     });
 
 

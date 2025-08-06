@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "test":"vitest"
+    "test":"vitest --config src/tests/vitest.config.js"
   },
   "author": "Zain Ul Abad",
   "license": "ISC",
