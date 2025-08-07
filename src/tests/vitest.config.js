@@ -5,8 +5,9 @@ export default defineConfig({
     test: {
         setupFiles: ["src/tests/test_setup.js"],
         sequence: {
-            concurrent: false
+            concurrent: false,
+            shuffle:false
         },
-        
+        isolate:true
     },
 });

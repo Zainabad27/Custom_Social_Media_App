@@ -27,6 +27,7 @@ describe("Testing the subscribtion controller.", () => {
             email: "zain@gmail.com",
             fullname: "zainabad"
         });
+        console.log(subscriber)
         subscriberid = subscriber.id;
         // channel that will be subscribed
         const userinstance = await users.create({
@@ -43,8 +44,9 @@ describe("Testing the subscribtion controller.", () => {
             username: "zainabad123",
             password: "zain123"
         });
-      
+       console.log(res.body)
         accesstoken = res.body.data.new_accesstoken;
+         console.log(accesstoken)
     });
 
 
@@ -105,10 +107,6 @@ describe("Testing the subscribtion controller.", () => {
     it("should not subscribe the channel (channel does not exists in db.)", async ()=>{
         const res = await request(app).post(`/api/v1/subscribers/c/6874e79b48f880c2b9211d84/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
 
-     
-
-
-
         expect(res.body.message).toBe("The channel you are trying to subscribe, does not exists.");
       
 
@@ -132,19 +130,25 @@ describe("Testing the subscribtion controller.", () => {
 
     });
 
-    it("should not subscribe the channel (already a subscriber)", async ()=>{
+    it("should not subscribe the channel (Channel subscribing itself)", async ()=>{
         
         const res = await request(app).post(`/api/v1/subscribers/c/${subscriberid}/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
 
-     
-
-
-
         expect(res.body.message).toBe("A user cannot subscribe itself.");
-      
+
+    });
 
 
-    })
+
+    it("Should  not unsubscribe the user(invalid channel id was given)", async () => {
+        const res = await request(app).post(`/api/v1/subscribers/c/${channelid}1/unsubscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
+
+
+        expect(res.body.message).toBe("not a valid mongoose ID");
+        expect(res.body.success).toBe(false);
+
+
+    });
 
 
 
@@ -153,4 +157,4 @@ describe("Testing the subscribtion controller.", () => {
         await users.deleteMany({});
         await subscribtions.deleteMany({});
     })
-})
+});

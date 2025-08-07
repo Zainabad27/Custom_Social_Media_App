@@ -59,6 +59,9 @@ class subscribe_controller {
         if (!channelid) {
             throw new MyError(401, "Channel id was not given.");
         };
+        if (!mongoose.Types.ObjectId.isValid(channelid)) {
+            throw new MyError(400, "not a valid mongoose ID")
+        };
 
         const deleted_subscriber = await this.subscribtion.findOneAndDelete({
             subscriber: userid,

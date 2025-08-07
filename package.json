@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "test":"vitest --config src/tests/vitest.config.js"
+    "test":"vitest --config src/tests/vitest.config.js",
+"test2":"vitest run --config src/tests/vitest.config.js --sequence.concurrent false --sequence.shuffle false"
   },
   "author": "Zain Ul Abad",
   "license": "ISC",

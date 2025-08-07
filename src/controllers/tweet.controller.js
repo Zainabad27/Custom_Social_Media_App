@@ -15,8 +15,7 @@ class tweet_controller {
         this.users = usermodel;
 
     }
-
-
+    
     make_a_tweet = async_handler(async (req, res) => {
         // secured route.
         const { tweet_content } = req.body;
