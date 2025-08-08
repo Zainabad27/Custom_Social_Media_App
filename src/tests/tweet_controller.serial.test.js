@@ -1,11 +1,26 @@
 import request from "supertest";
-import { afterAll, beforeAll, it, expect, describe, beforeEach, afterEach } from "vitest";
+import { afterAll, beforeAll, it, expect, describe, beforeEach } from "vitest";
 import { app } from "../app.js";
 import { users } from "../models/user.model.js";
 import { tweets } from "../models/tweet.model.js";
 
+//---------------------------------------------------------sending files----------------------------------------------
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const filepath = path.join(__dirname, "zain.jpg");
+
+//--------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 describe("Testing the tweet controller", () => {
-    let accesstoken2;
+
+  let accesstoken2;
     let userid;
     beforeEach(async () => {
         await tweets.findOneAndDelete({
@@ -44,7 +59,25 @@ describe("Testing the tweet controller", () => {
 
 
         expect(res.body.message).toBe("Tweet was saved in the database.")
-    })
+    });
+
+    it("should not make a tweet.(no content was given.)", async () => {
+        const res = await request(app).post("/api/v1/tweets/maketweet").set("Cookie", [`accesstoken=${accesstoken2}`]).send({
+          tweet_content:""
+        });
+
+
+        expect(res.body.message).toBe("tweet content is necessary but was not given.");
+    });
+
+    it("should make a tweet.(only media was given.)", async () => {
+        const res = await request(app).post("/api/v1/tweets/maketweet").set("Cookie", [`accesstoken=${accesstoken2}`])
+        .attach("tweet_media", filepath);
+
+
+        expect(res.body.message).toBe("Tweet was saved in the database.");
+    });
+
 
 
     afterAll(async () => {
