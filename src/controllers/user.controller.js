@@ -119,7 +119,7 @@ class user_controller {
 
 
         return res.status(201).json(new ApiResponse(
-            201, user_created, "User regitered successfully"
+            201, user_created, "user registered successfully"
         ))
 
 

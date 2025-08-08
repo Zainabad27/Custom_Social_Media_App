@@ -15,7 +15,9 @@ const __dirname = path.dirname(__filename);
 describe("testing the user controller(register).", () => {
     //LOCAL HOOKS
     beforeEach(async () => {
-        await users.deleteMany({});
+        await users.findOneAndDelete({
+            username: "zain1"
+        });
     })
 
     const filepath = path.join(__dirname, "zain.jpg");
@@ -23,12 +25,13 @@ describe("testing the user controller(register).", () => {
         const res = await request(app)
             .post("/api/v1/users/register")
             .attach("avatar", filepath)
-            .field("username", "zain3")
+            .field("username", "zain1")
             .field("password", "1234567")
-            .field("email", "abcd4@gmail.com")
-            .field("fullname", "zainabad4")
+            .field("email", "zain1@gmail.com")
+            .field("fullname", "zain1abad4")
 
         expect(res.status).toBe(201);
+        expect(res.body.message).toBe("user registered successfully")
 
 
     })
@@ -40,7 +43,7 @@ describe("testing the user controller(register).", () => {
             .field("email", "abcd4@gmail.com")
             .field("fullname", "zainabad4")
 
-         expect(res.status).toBe(400);
+        expect(res.status).toBe(400);
         expect(res.body.message).toBe("Avatar is compulsory but was not given.");
     });
     it("should not register a user cuz username is not given", async () => {
@@ -57,7 +60,9 @@ describe("testing the user controller(register).", () => {
     })
 
     afterAll(async () => {
-        await users.deleteMany({});
+        await users.findOneAndDelete({
+            username: "zain1"
+        });
     })
 
 
@@ -66,14 +71,13 @@ describe("testing the user controller(register).", () => {
 describe("testing the user controller(Login).", () => {
     //LOCAL HOOKS
     beforeAll(async () => {
-        await users.deleteMany({});
+
         await users.create({
-            username: "zainabad",
-            password: "zain123",
-            email: "zain@gmail.com",
+            username: "zain2",
+            password: "zain2",
             avatar: "http://res.cloudinary.com/zainabad27/image/upload/v1753292672/xbksaqie8af8nbiibwnp.jpg",
-            email: "zain@gmail.com",
-            fullname: "zainabad"
+            email: "zain2@gmail.com",
+            fullname: "zainabad2"
         })
     })
 
@@ -81,12 +85,12 @@ describe("testing the user controller(Login).", () => {
     it("should login the user.", async () => {
 
         const res = await request(app).post("/api/v1/users/login").send({
-            username: "zainabad",
-            password: "zain123"
+            username: "zain2",
+            password: "zain2"
         })
 
         expect(res.status).toBe(201);
-         expect(res.Cookie).toEqual(res.Cookie)
+        expect(res.Cookie).toEqual(res.Cookie)
     })
     it("should not login the user cuz username does ont exists in the DB.", async () => {
         const res = await request(app).post("/api/v1/users/login").send({
@@ -98,7 +102,7 @@ describe("testing the user controller(Login).", () => {
     });
     it("should not login cuz incorrect password", async () => {
         const res = await request(app).post("/api/v1/users/login").send({
-            username: "zainabad",
+            username: "zain2",
             password: "dodoijdoiewj"
         });
 
@@ -107,64 +111,66 @@ describe("testing the user controller(Login).", () => {
     })
 
     afterAll(async () => {
-        await users.deleteMany({});
+        await users.findOneAndDelete({
+            username: "zain2"
+        })
     })
 })
 
 describe("testing the user controller(logout)", () => {
     let accesstoken;
-    beforeEach(async () => {
-         await users.deleteMany({});
-        await users.create({
-            username: "zainabad",
-            password: "zain123",
-            email: "zain@gmail.com",
+    beforeAll(async () => {
+         await users.create({
+            username: "zain3",
+            password: "zain3",
+            email: "zain3@gmail.com",
             avatar: "http://res.cloudinary.com/zainabad27/image/upload/v1753292672/xbksaqie8af8nbiibwnp.jpg",
-            email: "zain@gmail.com",
-            fullname: "zainabad"
+            fullname: "zainabad3"
         })
 
-        const res=await request(app).post("/api/v1/users/login").send({
-            username: "zainabad",
-            password: "zain123"
+        const res = await request(app).post("/api/v1/users/login").send({
+            username: "zain3",
+            password: "zain3"
         });
-        accesstoken=res.body.data?.new_accesstoken;
+        accesstoken = res.body.data?.new_accesstoken;
     });
 
 
     it("should update the user password", async () => {
         const res = await request(app).post("/api/v1/users/update-password")
-        .set("Cookie", [`accesstoken=${accesstoken}`])
-        .send({
-            oldpassword: "zain123",
-            newpassword: "123zain",
-            confirmpassword: "123zain"
-        });
+            .set("Cookie", [`accesstoken=${accesstoken}`])
+            .send({
+                oldpassword: "zain3",
+                newpassword: "123zain",
+                confirmpassword: "123zain"
+            });
         expect(res.body.message).toBe("Password Updated Succesfully.");
     })
     it("should not update the user passowrd (old is not correct).", async () => {
         const res = await request(app).post("/api/v1/users/update-password")
-        .set("Cookie", [`accesstoken=${accesstoken}`])
-        .send({
-            oldpassword: "zain1234",
-            newpassword: "123zain",
-            confirmpassword: "123zain"
-        });
+            .set("Cookie", [`accesstoken=${accesstoken}`])
+            .send({
+                oldpassword: "jwdmom",
+                newpassword: "123zain",
+                confirmpassword: "123zain"
+            });
         expect(res.body.message).toBe("Incorrect Old password.");
     })
     it("should not update the user passowrd (old is same as new).", async () => {
         const res = await request(app).post("/api/v1/users/update-password")
-        .set("Cookie", [`accesstoken=${accesstoken}`])
-        .send({
-            oldpassword: "123zain",
-            newpassword: "123zain",
-            confirmpassword: "123zain"
-        });
+            .set("Cookie", [`accesstoken=${accesstoken}`])
+            .send({
+                oldpassword: "123zain",
+                newpassword: "123zain",
+                confirmpassword: "123zain"
+            });
         expect(res.body.message).toBe("No changes made in the database.(new password is same as old password)");
     });
 
 
-      afterAll(async () => {
-        await users.deleteMany({});
+    afterAll(async () => {
+        await users.findOneAndDelete({
+            username: "zain3"
+        });
     })
 })

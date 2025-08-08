@@ -1,5 +1,5 @@
 import request from "supertest";
-import { afterAll, beforeAll, it, expect, describe, beforeEach, afterEach } from "vitest";
+import { afterAll, beforeAll, it, expect, describe, beforeEach } from "vitest";
 import { app } from "../app.js";
 import { users } from "../models/user.model.js";
 import { subscribtions } from "../models/subscribtion.model.js";
@@ -11,43 +11,47 @@ describe("Testing the subscribtion controller.", () => {
     let accesstoken;
     let subscriberid;
     let channelid;
-    beforeEach(async()=>{
-         await subscribtions.deleteMany({});
-    })
+
     beforeAll(async () => {
-        await users.deleteMany({});
-       
+
+
         // user that will subscribe.
 
         const subscriber = await users.create({
-            username: "zainabad123",
-            password: "zain123",
-            email: "zain@gmail.com",
+            username: "zain4",
+            password: "zain4",
+            email: "zain4@gmail.com",
             avatar: "http://res.cloudinary.com/zainabad27/image/upload/v1753292672/xbksaqie8af8nbiibwnp.jpg",
-            email: "zain@gmail.com",
-            fullname: "zainabad"
+            email: "zain4@gmail.com",
+            fullname: "zainabad4"
         });
-        console.log(subscriber)
+        // console.log(subscriber)
         subscriberid = subscriber.id;
         // channel that will be subscribed
         const userinstance = await users.create({
-            username: "zain1",
-            password: "zain1",
-            email: "zain1@gmail.com",
+            username: "zain5",
+            password: "zain5",
+            email: "zain5@gmail.com",
             avatar: "http://res.cloudinary.com/zainabad27/image/upload/v1753292672/xbksaqie8af8nbiibwnp.jpg",
 
-            fullname: "zain1"
+            fullname: "zain5"
         });
         channelid = userinstance.id;
 
         const res = await request(app).post("/api/v1/users/login").send({
-            username: "zainabad123",
-            password: "zain123"
+            username: "zain4",
+            password: "zain4"
         });
-       console.log(res.body)
+        //    console.log(res.body)
         accesstoken = res.body.data.new_accesstoken;
-         console.log(accesstoken)
+        //  console.log(accesstoken)
     });
+    beforeEach(async () => {
+        await subscribtions.findOneAndDelete({
+            channel: channelid,
+            subscriber:subscriberid
+        })
+    })
 
 
     it("Should subscribe the user", async () => {
@@ -79,7 +83,7 @@ describe("Testing the subscribtion controller.", () => {
 
         const res = await request(app).post(`/api/v1/subscribers/c/${channelid}/unsubscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
 
-     
+
 
 
 
@@ -91,47 +95,43 @@ describe("Testing the subscribtion controller.", () => {
     });
 
 
-    it("should not subscribe the channel (invalid mongoose id)", async ()=>{
+    it("should not subscribe the channel (invalid mongoose id)", async () => {
         const res = await request(app).post(`/api/v1/subscribers/c/6874e79b48f880c2b9218/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
 
-     
+
 
 
 
         expect(res.body.message).toBe("not a valid mongoose ID");
-      
+
 
 
     })
 
-    it("should not subscribe the channel (channel does not exists in db.)", async ()=>{
+    it("should not subscribe the channel (channel does not exists in db.)", async () => {
         const res = await request(app).post(`/api/v1/subscribers/c/6874e79b48f880c2b9211d84/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
 
         expect(res.body.message).toBe("The channel you are trying to subscribe, does not exists.");
-      
+
 
 
     });
 
-    it("should not subscribe the channel (already a subscriber)", async ()=>{
+    it("should not subscribe the channel (already a subscriber)", async () => {
         await subscribtions.create({
             subscriber: subscriberid,
             channel: channelid
         })
         const res = await request(app).post(`/api/v1/subscribers/c/${channelid}/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
 
-     
-
-
 
         expect(res.body.message).toBe("User is already a subscriber");
-      
 
 
     });
 
-    it("should not subscribe the channel (Channel subscribing itself)", async ()=>{
-        
+    it("should not subscribe the channel (Channel subscribing itself)", async () => {
+
         const res = await request(app).post(`/api/v1/subscribers/c/${subscriberid}/subscribe/channel`).set("Cookie", [`accesstoken=${accesstoken}`]);
 
         expect(res.body.message).toBe("A user cannot subscribe itself.");
@@ -154,7 +154,15 @@ describe("Testing the subscribtion controller.", () => {
 
 
     afterAll(async () => {
-        await users.deleteMany({});
-        await subscribtions.deleteMany({});
+        await users.findOneAndDelete({
+            username: "zain4"
+        });
+        await users.findOneAndDelete({
+            username: "zain5"
+        });
+        await subscribtions.findOneAndDelete({
+            channel: channelid,
+            subscriber:subscriberid
+        })
     })
 });
