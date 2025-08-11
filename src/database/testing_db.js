@@ -8,7 +8,7 @@ const connect_testing_db = async () => {
         const conn = await mongoose.connect(`${process.env.DATABASE_URL}/${TESTING_DB_NAME}`)
         console.log("Connected to testing db.", conn.connection.host)
     } catch (error) {
-        console.log("testing database connection failed.", error.message);
+        console.log("testing database connection failed.", error);
         process.exit(1);
     }
 

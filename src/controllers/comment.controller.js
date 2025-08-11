@@ -18,12 +18,12 @@ class comment_controller {
         // secured route.
         const { content, vidtitle } = req.body;
 
-        if (!content) {
+        if (!content ||content===""||content.trim()==="") {
             throw new MyError(401, "Comment Cannot be Empty")
 
         }
         if (!vidtitle) {
-            throw new MyError(401, "Comment's Video was not sent");
+            throw new MyError(401, "video title was not sent.");
         }
         const id = req.user.id;
         if (!id) {

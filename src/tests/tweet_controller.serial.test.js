@@ -88,8 +88,8 @@ describe("Testing the tweet controller", () => {
         await users.findOneAndDelete({
             username: "zaintweet"
         });
-        await tweets.findOneAndDelete({
-            tweet_content: "Testing tweet functionality in tweet testing file."
+        await tweets.deleteMany({
+            tweet_owner: userid
         })
     })
 });
