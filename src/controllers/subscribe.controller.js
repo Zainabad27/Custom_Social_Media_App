@@ -75,7 +75,7 @@ class subscribe_controller {
         res.status(200).json(new ApiResponse(200, deleted_subscriber, "Unsubscribed Successfully."))
     })
 };
-
+  
 const subscribe_obj = new subscribe_controller(subscribtions,users);
 
 export { subscribe_obj }

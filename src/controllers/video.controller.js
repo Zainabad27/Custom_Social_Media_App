@@ -290,7 +290,7 @@ class video_controller {
         res.status(200).json(new ApiResponse(200, vidinstance, "Video deleted successfully."));
 
     })
-
+    
 
 };
 

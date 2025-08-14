@@ -10,10 +10,10 @@ import { likes } from "../models/like.model.js"
 import { comments } from "../models/comment.model.js";
 import { videos } from "../models/video.model.js";
 import { tweets } from "../models/tweet.model.js";
-
+  
 class like_controller {
     // secured route.
-
+  
     constructor(like_model, vid_model, tweet_model, comment_model) {
         this.likes = like_model;
         this.comments = comment_model;

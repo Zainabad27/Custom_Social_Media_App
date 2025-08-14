@@ -13,6 +13,6 @@ const subscribtionschema = new mongoose.Schema({
 }, { timestamps: true });
 const subscribtions = mongoose.model("Subscribtion", subscribtionschema);
 
-
+  
 
 export { subscribtions };

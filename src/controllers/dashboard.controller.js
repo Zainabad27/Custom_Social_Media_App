@@ -397,7 +397,7 @@ class dashboard {
 
 
 }; // class ends here
-
+  
 
 const dashboard_obj = new dashboard(users);
 

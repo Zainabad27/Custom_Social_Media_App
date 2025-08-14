@@ -143,7 +143,7 @@ class tweet_controller {
         if (!tweet_instance) {
             throw new MyError(501, "tweet was not found in the database")
         }
-
+   
         if (!(tweet_instance.tweet_owner.equals(user_id))) {
             throw new MyError(403, "Only tweet owner can delete the tweet");
         }

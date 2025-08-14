@@ -5,7 +5,7 @@ import { tweets } from "../models/tweet.model.js";
 import { subscribtions } from "../models/subscribtion.model.js";
 // utilities
 import { async_handler } from "../utils/async_handler.js";
-
+  
 class delete_user {
     constructor(vidmodel, tweetmodel, commentmodel, likemodel, subsmodel) {
         this.videos = vidmodel;

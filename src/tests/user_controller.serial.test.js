@@ -96,7 +96,7 @@ describe("testing the user controller(Login).", () => {
         const res = await request(app).post("/api/v1/users/login").send({
             username: "kdcnf",
             password: "123456"
-        });
+        });    
 
         expect(res.body.message).toBe("User does not exists");
     });

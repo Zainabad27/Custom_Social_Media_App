@@ -16,7 +16,7 @@ const likeschema = new mongoose.Schema({
     oncomment: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",
-        default: null
+        default: null  
 
     },
     owner_of_like: {

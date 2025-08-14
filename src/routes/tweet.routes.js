@@ -15,6 +15,6 @@ router.route("/maketweet").post(jwt_verify, upload.fields([{
 
 router.route("/c/:id/delete/tweet").delete(jwt_verify,tweet_obj.delete_tweet);
 
-
+    
 
 export default router;

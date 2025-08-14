@@ -31,7 +31,7 @@ router.route("/update-user/details").patch(jwt_verify, upload.fields([{
     name: "coverimage",
     maxCount: 1
 }]), obj1.updateuserdetails);
-
+   
 router.route("/c/:username/getuserprofile").get(jwt_verify, obj1.getuserchannelprofile);
 router.route("/getwatchhistory").get(jwt_verify, obj1.getuserwatchhistory);
 

@@ -112,7 +112,7 @@ class user_controller {
         const user_created = await this.users.findById(user._id).select(
             "-password -refreshtoken"
         )
-
+    
         if (!user_created) {
             throw new MyError(500, "having problems while saving the data into the database.");
         }

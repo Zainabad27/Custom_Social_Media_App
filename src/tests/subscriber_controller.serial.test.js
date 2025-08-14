@@ -11,7 +11,7 @@ describe("Testing the subscribtion controller.", () => {
     let accesstoken;
     let subscriberid;
     let channelid;
-
+    
     beforeAll(async () => {
 
 

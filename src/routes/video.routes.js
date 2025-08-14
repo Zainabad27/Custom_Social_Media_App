@@ -18,7 +18,7 @@ router.route("/uploading-video").post(
     maxCount: 1
   }]),
   video_obj.upload_video);
-
+   
 
 router.route("/c/:id/click/video").get(jwt_verify, video_obj.click_on_video);
 router.route("/c/:id/update/video").post(jwt_verify, upload.single("thumbnail"), video_obj.update_video);

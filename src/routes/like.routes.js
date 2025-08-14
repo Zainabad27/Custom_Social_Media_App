@@ -13,6 +13,6 @@ router.route("/c/:id/remove/like/tweet").delete(jwt_verify, like_obj.remove_twt_
 router.route("/c/:id/like/comment").post(jwt_verify, like_obj.like_comment);
 router.route("/c/:id/remove/like/comment").delete(jwt_verify, like_obj.remove_comment_like);
 
-
+   
 
 export default router;

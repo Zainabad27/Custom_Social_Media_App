@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 // dependencies
 import { comments } from "../models/comment.model.js";
 import { videos } from "../models/video.model.js";
-
+  
 class comment_controller {
     constructor(commentmodel, videomodel) {
         this.comments = commentmodel;

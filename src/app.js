@@ -56,7 +56,7 @@ app.use("/api/v1/dashboard", dashboard_router);
 import subscribe_router from "./routes/subcriber.routes.js";
 
 app.use("/api/v1/subscribers", subscribe_router)
-
+   
 app.use((err, _, res, __) => {
     const status = err.statusCode || 500;
     res.status(status).json({
